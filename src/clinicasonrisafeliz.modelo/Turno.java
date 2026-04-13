@@ -45,7 +45,7 @@ public class Turno {
         this.estado = EstadoTurno.CANCELADO;
     }
 
-    // Método toString para visualizar el turno completo
+    //Metodo para ver el turno
     @Override
     public String toString() {
         // Usamos un formato de fecha manual o simple para que diga DD-MM-AAAA

@@ -1,4 +1,6 @@
-package clinicasonrisafeliz.modelo;
+package clinicasonrisafeliz.app;
+
+import clinicasonrisafeliz.modelo.*;
 
 import java.time.LocalDate; //manejar fechas
 import java.time.LocalTime; //manejar hora
