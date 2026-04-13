@@ -47,14 +47,13 @@ public class Paciente {
 
     @Override
     public String toString() {
-        return "Paciente [" +
+        return "Paciente" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
                 ", dni='" + dni + '\'' +
                 ", email='" + email + '\'' +
                 ", fechaIngreso=" + fechaIngreso +
-                ", domicilio=" + (domicilio != null ? domicilio.toString() : "Sin domicilio") +
-                ']';
+                ", domicilio=" + domicilio;
     }
 }

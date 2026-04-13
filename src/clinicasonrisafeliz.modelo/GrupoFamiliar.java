@@ -8,11 +8,14 @@ public class GrupoFamiliar {
     private String planDescuento;
     private List<Paciente> miembros; // Relación de Agregación
 
-
     public GrupoFamiliar(String nombreFamilia, String planDescuento, ArrayList<Paciente> miembros) {
         this.nombreFamilia = nombreFamilia;
         this.planDescuento = planDescuento;
-        this.miembros = miembros != null ? miembros : new ArrayList<>();
+        if (miembros != null) {
+            this.miembros = miembros;
+        } else {
+            this.miembros = new ArrayList<>();
+        }
     }
 
     public String getNombreFamilia() { return nombreFamilia; }
@@ -28,7 +31,7 @@ public class GrupoFamiliar {
     public void agregarMiembros(Paciente p) {
         if (p != null) {
             this.miembros.add(p);
-            System.out.println("El paciente " + p.getNombre() + " " + p.getApellido() +" se agrego a la familia " + this.nombreFamilia);
+            System.out.println("El paciente " + p.getNombre() + " " + p.getApellido() +" se agrego a la " + this.nombreFamilia);
         }
     }
 
@@ -40,9 +43,8 @@ public class GrupoFamiliar {
         }
     }
 
-    // Método para aplicar descuento sobre un monto (Lógica de negocio)
+    // Descuento con Plan
     public void aplicarDescuento(Double monto) {
-        // Ejemplo simple: si tiene plan, aplicamos un 15%
         if (planDescuento != null && !planDescuento.isEmpty()) {
             Double total = monto * 0.85;
             System.out.println("Monto original: $" + monto + " | Con descuento: $" + total);
@@ -52,7 +54,6 @@ public class GrupoFamiliar {
     }
 
     public void listarMiembros() {
-        System.out.println("--- Miembros de la Familia " + this.nombreFamilia + " ---");
         for (Paciente p : miembros) {
             System.out.println("- " + p.getApellido() + ", " + p.getNombre() + " (DNI: " + p.getDni() + ")");
         }

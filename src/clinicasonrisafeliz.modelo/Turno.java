@@ -53,8 +53,8 @@ public class Turno {
 
         return "Turno N°" + id + ", " +
                 "\n  Paciente= " + paciente.getNombre() + " " + paciente.getApellido() +
-                "\n  Odontologo=" + odontologo.getApellido() + "," +
-                "\n  Dia " + fechaFormateada + " a las " + hora + ", " +
-                "\nEstado=" + estado + "]";
+                "\n  Odontologo=" + odontologo.getApellido() +
+                "\n  Dia " + fechaFormateada + " a las " + hora +
+                "\nEstado=" + estado;
     }
 }

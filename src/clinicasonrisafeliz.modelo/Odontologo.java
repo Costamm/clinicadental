@@ -28,14 +28,12 @@ public class Odontologo {
     public String getMatricula() { return matricula; }
     public void setMatricula(String matricula) { this.matricula = matricula; }
 
-    // Método toString para identificación rápida
     @Override
     public String toString() {
-        return "Odontologo [" +
+        return "Odontologo" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
-                ", matricula='" + matricula + '\'' +
-                ']';
+                ", matricula='" + matricula + '\'';
     }
 }
