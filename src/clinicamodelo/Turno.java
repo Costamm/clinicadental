@@ -1,4 +1,4 @@
-package clinicasonrisafeliz.modelo;
+package clinicamodelo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -1,4 +1,4 @@
-package clinicasonrisafeliz.modelo;
+package clinicamodelo;
 
 public enum EstadoTurno {
     PENDIENTE,

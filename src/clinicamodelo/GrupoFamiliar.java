@@ -1,4 +1,4 @@
-package clinicasonrisafeliz.modelo;
+package clinicamodelo;
 
 import java.util.ArrayList;
 import java.util.List;
