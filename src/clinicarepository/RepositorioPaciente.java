@@ -11,12 +11,16 @@ public class RepositorioPaciente implements IRepositorio<Paciente> {
     private final Map<Long, Paciente> pacientes = new HashMap<>();
 
     @Override
-    public void guardar(Paciente paciente) {
-        validarPacienteConId(paciente);
+    public boolean guardar(Paciente paciente) {
+        if (!validarPacienteConId(paciente)) {
+            return false;
+        }
         if (pacientes.containsKey(paciente.getId())) {
-            throw new IllegalArgumentException("Ya existe un paciente con id " + paciente.getId() + ".");
+            System.out.println("Ya existe un paciente con id " + paciente.getId() + ".");
+            return false;
         }
         pacientes.put(paciente.getId(), paciente);
+        return true;
     }
 
     @Override
@@ -30,26 +34,39 @@ public class RepositorioPaciente implements IRepositorio<Paciente> {
     }
 
     @Override
-    public void actualizar(Paciente paciente) {
-        validarPacienteConId(paciente);
-        validarExistencia(paciente.getId());
+    public boolean actualizar(Paciente paciente) {
+        if (!validarPacienteConId(paciente)) {
+            return false;
+        }
+        if (!validarExistencia(paciente.getId())) {
+            return false;
+        }
         pacientes.put(paciente.getId(), paciente);
+        return true;
     }
 
     @Override
-    public void eliminar(Long id) {
+    public boolean eliminar(Long id) {
+        if (!validarExistencia(id)) {
+            return false;
+        }
         pacientes.remove(id);
+        return true;
     }
 
-    private void validarPacienteConId(Paciente paciente) {
+    private boolean validarPacienteConId(Paciente paciente) {
         if (paciente == null || paciente.getId() == null) {
-            throw new IllegalArgumentException("El paciente y su id son obligatorios.");
+            System.out.println("El paciente y su id son obligatorios.");
+            return false;
         }
+        return true;
     }
 
-    private void validarExistencia(Long id) {
+    private boolean validarExistencia(Long id) {
         if (!pacientes.containsKey(id)) {
-            throw new IllegalArgumentException("No existe un paciente con id " + id + ".");
+            System.out.println("No existe un paciente con id " + id + ".");
+            return false;
         }
+        return true;
     }
 }

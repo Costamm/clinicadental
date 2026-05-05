@@ -11,14 +11,20 @@ public class ServicioPaciente {
         this.repositorioPaciente = repositorioPaciente;
     }
 
-    public void guardar(Paciente paciente) {
-        validarPaciente(paciente);
-        validarDniDisponible(paciente);
-        repositorioPaciente.guardar(paciente);
+    public boolean guardar(Paciente paciente) {
+        if (!validarPaciente(paciente)) {
+            return false;
+        }
+        if (!validarDniDisponible(paciente)) {
+            return false;
+        }
+        return repositorioPaciente.guardar(paciente);
     }
 
     public Paciente buscarPorId(Long id) {
-        validarId(id);
+        if (!validarId(id)) {
+            return null;
+        }
         return repositorioPaciente.buscarPorId(id);
     }
 
@@ -26,56 +32,85 @@ public class ServicioPaciente {
         return repositorioPaciente.listarTodos();
     }
 
-    public void actualizar(Paciente paciente) {
-        validarPaciente(paciente);
-        validarExistencia(paciente.getId());
-        validarDniDisponible(paciente);
-        repositorioPaciente.actualizar(paciente);
-    }
-
-    public void eliminar(Long id) {
-        validarId(id);
-        validarExistencia(id);
-        repositorioPaciente.eliminar(id);
-    }
-
-    private void validarPaciente(Paciente paciente) {
-        if (paciente == null) {
-            throw new IllegalArgumentException("El paciente es obligatorio.");
+    public boolean actualizar(Paciente paciente) {
+        if (!validarPaciente(paciente)) {
+            return false;
         }
-        validarId(paciente.getId());
-        validarTexto(paciente.getNombre(), "El nombre del paciente es obligatorio.");
-        validarTexto(paciente.getApellido(), "El apellido del paciente es obligatorio.");
-        validarTexto(paciente.getDni(), "El DNI del paciente es obligatorio.");
-        validarTexto(paciente.getTelefono(), "El telefono del paciente es obligatorio.");
-        validarTexto(paciente.getEmail(), "El email del paciente es obligatorio.");
+        if (!validarExistencia(paciente.getId())) {
+            return false;
+        }
+        if (!validarDniDisponible(paciente)) {
+            return false;
+        }
+        return repositorioPaciente.actualizar(paciente);
     }
 
-    private void validarDniDisponible(Paciente paciente) {
+    public boolean eliminar(Long id) {
+        if (!validarId(id)) {
+            return false;
+        }
+        if (!validarExistencia(id)) {
+            return false;
+        }
+        return repositorioPaciente.eliminar(id);
+    }
+
+    private boolean validarPaciente(Paciente paciente) {
+        if (paciente == null) {
+            System.out.println("El paciente es obligatorio.");
+            return false;
+        }
+        if (!validarId(paciente.getId())) {
+            return false;
+        }
+        if (!validarTexto(paciente.getNombre(), "El nombre del paciente es obligatorio.")) {
+            return false;
+        }
+        if (!validarTexto(paciente.getApellido(), "El apellido del paciente es obligatorio.")) {
+            return false;
+        }
+        if (!validarTexto(paciente.getDni(), "El DNI del paciente es obligatorio.")) {
+            return false;
+        }
+        if (!validarTexto(paciente.getTelefono(), "El telefono del paciente es obligatorio.")) {
+            return false;
+        }
+        return validarTexto(paciente.getEmail(), "El email del paciente es obligatorio.");
+    }
+
+    private boolean validarDniDisponible(Paciente paciente) {
         for (Paciente pacienteRegistrado : repositorioPaciente.listarTodos()) {
             boolean mismoDni = pacienteRegistrado.getDni().equals(paciente.getDni());
             boolean distintoId = !pacienteRegistrado.getId().equals(paciente.getId());
             if (mismoDni && distintoId) {
-                throw new IllegalArgumentException("Ya existe un paciente registrado con DNI " + paciente.getDni() + ".");
+                System.out.println("Ya existe un paciente registrado con DNI " + paciente.getDni() + ".");
+                return false;
             }
         }
+        return true;
     }
 
-    private void validarExistencia(Long id) {
+    private boolean validarExistencia(Long id) {
         if (repositorioPaciente.buscarPorId(id) == null) {
-            throw new IllegalArgumentException("No existe un paciente con id " + id + ".");
+            System.out.println("No existe un paciente con id " + id + ".");
+            return false;
         }
+        return true;
     }
 
-    private void validarId(Long id) {
+    private boolean validarId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id del paciente es obligatorio.");
+            System.out.println("El id del paciente es obligatorio.");
+            return false;
         }
+        return true;
     }
 
-    private void validarTexto(String valor, String mensaje) {
+    private boolean validarTexto(String valor, String mensaje) {
         if (valor == null || valor.trim().isEmpty()) {
-            throw new IllegalArgumentException(mensaje);
+            System.out.println(mensaje);
+            return false;
         }
+        return true;
     }
 }

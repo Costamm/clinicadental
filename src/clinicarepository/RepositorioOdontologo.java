@@ -11,12 +11,16 @@ public class RepositorioOdontologo implements IRepositorio<Odontologo> {
     private final Map<Long, Odontologo> odontologos = new HashMap<>();
 
     @Override
-    public void guardar(Odontologo odontologo) {
-        validarOdontologoConId(odontologo);
+    public boolean guardar(Odontologo odontologo) {
+        if (!validarOdontologoConId(odontologo)) {
+            return false;
+        }
         if (odontologos.containsKey(odontologo.getId())) {
-            throw new IllegalArgumentException("Ya existe un odontologo con id " + odontologo.getId() + ".");
+            System.out.println("Ya existe un odontologo con id " + odontologo.getId() + ".");
+            return false;
         }
         odontologos.put(odontologo.getId(), odontologo);
+        return true;
     }
 
     @Override
@@ -30,26 +34,39 @@ public class RepositorioOdontologo implements IRepositorio<Odontologo> {
     }
 
     @Override
-    public void actualizar(Odontologo odontologo) {
-        validarOdontologoConId(odontologo);
-        validarExistencia(odontologo.getId());
+    public boolean actualizar(Odontologo odontologo) {
+        if (!validarOdontologoConId(odontologo)) {
+            return false;
+        }
+        if (!validarExistencia(odontologo.getId())) {
+            return false;
+        }
         odontologos.put(odontologo.getId(), odontologo);
+        return true;
     }
 
     @Override
-    public void eliminar(Long id) {
+    public boolean eliminar(Long id) {
+        if (!validarExistencia(id)) {
+            return false;
+        }
         odontologos.remove(id);
+        return true;
     }
 
-    private void validarOdontologoConId(Odontologo odontologo) {
+    private boolean validarOdontologoConId(Odontologo odontologo) {
         if (odontologo == null || odontologo.getId() == null) {
-            throw new IllegalArgumentException("El odontologo y su id son obligatorios.");
+            System.out.println("El odontologo y su id son obligatorios.");
+            return false;
         }
+        return true;
     }
 
-    private void validarExistencia(Long id) {
+    private boolean validarExistencia(Long id) {
         if (!odontologos.containsKey(id)) {
-            throw new IllegalArgumentException("No existe un odontologo con id " + id + ".");
+            System.out.println("No existe un odontologo con id " + id + ".");
+            return false;
         }
+        return true;
     }
 }

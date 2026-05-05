@@ -11,12 +11,16 @@ public class RepositorioTurno implements IRepositorio<Turno> {
     private final Map<Long, Turno> turnos = new HashMap<>();
 
     @Override
-    public void guardar(Turno turno) {
-        validarTurnoConId(turno);
+    public boolean guardar(Turno turno) {
+        if (!validarTurnoConId(turno)) {
+            return false;
+        }
         if (turnos.containsKey(turno.getId())) {
-            throw new IllegalArgumentException("Ya existe un turno con id " + turno.getId() + ".");
+            System.out.println("Ya existe un turno con id " + turno.getId() + ".");
+            return false;
         }
         turnos.put(turno.getId(), turno);
+        return true;
     }
 
     @Override
@@ -30,26 +34,39 @@ public class RepositorioTurno implements IRepositorio<Turno> {
     }
 
     @Override
-    public void actualizar(Turno turno) {
-        validarTurnoConId(turno);
-        validarExistencia(turno.getId());
+    public boolean actualizar(Turno turno) {
+        if (!validarTurnoConId(turno)) {
+            return false;
+        }
+        if (!validarExistencia(turno.getId())) {
+            return false;
+        }
         turnos.put(turno.getId(), turno);
+        return true;
     }
 
     @Override
-    public void eliminar(Long id) {
+    public boolean eliminar(Long id) {
+        if (!validarExistencia(id)) {
+            return false;
+        }
         turnos.remove(id);
+        return true;
     }
 
-    private void validarTurnoConId(Turno turno) {
+    private boolean validarTurnoConId(Turno turno) {
         if (turno == null || turno.getId() == null) {
-            throw new IllegalArgumentException("El turno y su id son obligatorios.");
+            System.out.println("El turno y su id son obligatorios.");
+            return false;
         }
+        return true;
     }
 
-    private void validarExistencia(Long id) {
+    private boolean validarExistencia(Long id) {
         if (!turnos.containsKey(id)) {
-            throw new IllegalArgumentException("No existe un turno con id " + id + ".");
+            System.out.println("No existe un turno con id " + id + ".");
+            return false;
         }
+        return true;
     }
 }

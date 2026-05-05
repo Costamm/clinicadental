@@ -3,13 +3,13 @@ package clinicarepository;
 import java.util.List;
 
 public interface IRepositorio<T> {
-    void guardar(T entidad);
+    boolean guardar(T entidad);
 
     T buscarPorId(Long id);
 
     List<T> listarTodos();
 
-    void actualizar(T entidad);
+    boolean actualizar(T entidad);
 
-    void eliminar(Long id);
+    boolean eliminar(Long id);
 }
