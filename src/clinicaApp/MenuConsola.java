@@ -229,11 +229,12 @@ public class MenuConsola {
 
     private Domicilio leerDomicilio() {
         System.out.println("Datos del domicilio");
+        Long id = leerLong("ID domicilio: ");
         String calle = leerTextoObligatorio("Calle: ");
         int numero = leerEntero("Numero: ");
         String localidad = leerTextoObligatorio("Localidad: ");
         String provincia = leerTextoObligatorio("Provincia: ");
-        return new Domicilio(calle, numero, localidad, provincia);
+        return new Domicilio(id, calle, numero, localidad, provincia);
     }
 
     private void crearOdontologo() {
