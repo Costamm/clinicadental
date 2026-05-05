@@ -12,12 +12,12 @@ public class Main {
         System.out.println("--------------------------------------------------");
 
         Domicilio dom1 = new Domicilio(1L, "Av. Rivadavia", 742, "Liniers", "Buenos Aires");
-        Paciente pac1 = new Paciente(101L, "Juan", "Perez", "47034598", "juan@gmail.com", LocalDate.now(), dom1);
+        Paciente pac1 = new Paciente(101L,"Juan","Perez","47038907","11-1223-3849","juan@gmail.com",LocalDate.now(), dom1);
         Odontologo odon1 = new Odontologo(501L, "Julian", "Lopez", "MN-88342");
 
         ArrayList<Paciente> listaMiembros = new ArrayList<>();
 
-        GrupoFamiliar familia = new GrupoFamiliar("Familia Pérez", "Plan Oro", listaMiembros);
+        GrupoFamiliar familia = new GrupoFamiliar("Familia Pérez", new PlanPremium(), new ArrayList<>());;
         familia.agregarMiembros(pac1);
 
         //Turno

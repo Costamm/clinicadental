@@ -5,24 +5,20 @@ import java.util.List;
 
 public class GrupoFamiliar {
     private String nombreFamilia;
-    private String planDescuento;
+    private Plan plan;
     private List<Paciente> miembros; // Relación de Agregación
 
-    public GrupoFamiliar(String nombreFamilia, String planDescuento, ArrayList<Paciente> miembros) {
+    public GrupoFamiliar(String nombreFamilia, Plan plan, ArrayList<Paciente> miembros) {
         this.nombreFamilia = nombreFamilia;
-        this.planDescuento = planDescuento;
-        if (miembros != null) {
-            this.miembros = miembros;
-        } else {
-            this.miembros = new ArrayList<>();
-        }
+        this.plan = plan;
+        this.miembros = (miembros != null) ? miembros : new ArrayList<>();
     }
 
     public String getNombreFamilia() { return nombreFamilia; }
     public void setNombreFamilia(String nombreFamilia) { this.nombreFamilia = nombreFamilia; }
 
-    public String getPlanDescuento() { return planDescuento; }
-    public void setPlanDescuento(String planDescuento) { this.planDescuento = planDescuento; }
+    public Plan getPlan() { return plan; }
+    public void setPlan(Plan plan) { this.plan = plan; }
 
     public List<Paciente> getMiembros() { return miembros; }
     public void setMiembros(List<Paciente> miembros) { this.miembros = miembros; }
@@ -45,8 +41,9 @@ public class GrupoFamiliar {
 
     // Descuento con Plan
     public void aplicarDescuento(Double monto) {
-        if (planDescuento != null && !planDescuento.isEmpty()) {
-            Double total = monto * 0.85;
+        if (plan != null) {
+            Double total = plan.calcularDescuento(monto);
+            System.out.println("Plan aplicado: " + plan.getNombre());
             System.out.println("Monto original: $" + monto + " | Con descuento: $" + total);
         } else {
             System.out.println("Monto a pagar: $" + monto + " (Sin plan de descuento)");
@@ -63,7 +60,7 @@ public class GrupoFamiliar {
     public String toString() {
         return "GrupoFamiliar [" +
                 "Nombre='" + nombreFamilia + '\'' +
-                ", Plan='" + planDescuento + '\'' +
+                ", Plan='" + plan + '\'' +
                 ", Miembros=" + miembros.size() +
                 ']';
     }

@@ -27,7 +27,12 @@ public class Turno {
     public void setId(Long id) { this.id = id; }
 
     public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+        if (paciente != null && !paciente.getTurnos().contains(this)) {
+            paciente.agregarTurno(this);
+        }
+    }
 
     public Odontologo getOdontologo() { return odontologo; }
     public void setOdontologo(Odontologo odontologo) { this.odontologo = odontologo; }

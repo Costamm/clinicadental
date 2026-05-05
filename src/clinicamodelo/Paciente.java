@@ -1,27 +1,34 @@
 package clinicamodelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Paciente {
     private Long id;
     private String nombre;
     private String apellido;
     private String dni;
+    private String telefono;
     private String email;
     private LocalDate fechaIngreso;
     private Domicilio domicilio;
+    private List<Turno> turnos;
 
     public Paciente() {
+        this.turnos = new ArrayList<>();
     }
 
-    public Paciente(Long id, String nombre, String apellido, String dni, String email, LocalDate fechaIngreso, Domicilio domicilio) {
+    public Paciente(Long id, String nombre, String apellido, String dni, String telefono, String email, LocalDate fechaIngreso, Domicilio domicilio) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
+        this.telefono = telefono;
         this.email = email;
         this.fechaIngreso = fechaIngreso;
         this.domicilio = domicilio;
+        this.turnos = new ArrayList<>();
     }
 
     public Long getId() { return id; }
@@ -45,15 +52,18 @@ public class Paciente {
     public Domicilio getDomicilio() { return domicilio; }
     public void setDomicilio(Domicilio domicilio) { this.domicilio = domicilio; }
 
+    public String getTelefono(){ return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono;}
+
+    public List<Turno> getTurnos() { return turnos;}
+    public void setTurnos(List<Turno> turnos) { this.turnos = turnos;}
+
+    public void agregarTurno(Turno t) {
+        this.turnos.add(t);
+    }
+
     @Override
     public String toString() {
-        return "Paciente" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", dni='" + dni + '\'' +
-                ", email='" + email + '\'' +
-                ", fechaIngreso=" + fechaIngreso +
-                ", domicilio=" + domicilio;
+        return "Paciente: " + apellido + ", " + nombre + " | Tel: " + telefono + " | Turnos: " + turnos.size();
     }
 }
