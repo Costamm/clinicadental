@@ -1,14 +1,6 @@
 package clinicaApp;
 
-import clinicamodelo.grupos.GrupoFamiliar;
-import clinicamodelo.odontologos.Odontologo;
-import clinicamodelo.pacientes.Domicilio;
-import clinicamodelo.pacientes.Paciente;
-import clinicamodelo.planes.PlanPremium;
-import clinicamodelo.turnos.EstadoTurno;
-import clinicamodelo.turnos.Turno;
-import clinicamodelo.turnos.TurnoControl;
-import clinicamodelo.turnos.TurnoUrgente;
+import clinicamodelo.*;
 
 import java.time.LocalDate; //manejar fechas
 import java.time.LocalTime; //manejar hora
@@ -42,21 +34,6 @@ public class Main {
         System.out.println("\n>>> CAMBIO DE ESTADO DEL TURNO:");
         turno1.setEstado(EstadoTurno.CONFIRMADO);
         System.out.println("Nuevo estado: " + turno1.getEstado());
-
-        // --- PRUEBA DE JERARQUÍA DE TURNOS ---
-        // Turno de Control (Uso de polimorfismo)
-        TurnoControl turnoControl = new TurnoControl(
-                1002L, pac1, odon1, LocalDate.now(), LocalTime.of(10, 0), EstadoTurno.PENDIENTE
-        );
-
-        // Turno de Urgencia (Uso de polimorfismo con parámetro extra 'motivo')
-        TurnoUrgente turnoUrgente = new TurnoUrgente(
-                1003L, pac1, odon1, LocalDate.now(), LocalTime.of(11, 30), EstadoTurno.PENDIENTE, "Dolor agudo de muela"
-        );
-
-        System.out.println("\n>>> PRUEBA DE TIPOS DE TURNO:");
-        System.out.println(turnoControl.toString());
-        System.out.println(turnoUrgente.toString());
 
         System.out.println("--------------------------------------------------");
         System.out.println("PROCESO FINALIZADO CON ÉXITO");
