@@ -21,9 +21,7 @@ public class MenuConsola {
     private final ServicioTurno servicioTurno;
     private final Scanner scanner;
 
-    public MenuConsola(ServicioPaciente servicioPaciente,
-                       ServicioOdontologo servicioOdontologo,
-                       ServicioTurno servicioTurno) {
+    public MenuConsola(ServicioPaciente servicioPaciente, ServicioOdontologo servicioOdontologo, ServicioTurno servicioTurno) {
         this.servicioPaciente = servicioPaciente;
         this.servicioOdontologo = servicioOdontologo;
         this.servicioTurno = servicioTurno;
