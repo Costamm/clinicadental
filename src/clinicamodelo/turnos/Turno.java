@@ -2,7 +2,6 @@ package clinicamodelo.turnos;
 
 import clinicamodelo.pacientes.Paciente;
 import clinicamodelo.odontologos.Odontologo;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -26,12 +25,26 @@ public class Turno {
         this.estado = estado;
     }
 
+    // --- MÉTODOS DE LÓGICA EXPERT ---
+    public int obtenerDuracionMinutos() {
+        return 45; // Duración estándar
+    }
+
+    public double calcularCosto() {
+        return 10000.0; // Costo base
+    }
+
+    public void cancelarTurno() {
+        this.estado = EstadoTurno.CANCELADO;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public Paciente getPaciente() { return paciente; }
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
+        // Lógica de sincronización: si el paciente no tiene este turno, se lo agregamos
         if (paciente != null && !paciente.getTurnos().contains(this)) {
             paciente.agregarTurno(this);
         }
@@ -49,20 +62,13 @@ public class Turno {
     public EstadoTurno getEstado() { return estado; }
     public void setEstado(EstadoTurno estado) { this.estado = estado; }
 
-    public void cancelarTurno() {
-        this.estado = EstadoTurno.CANCELADO;
-    }
-
-    //Metodo para ver el turno
     @Override
     public String toString() {
-        // Usamos un formato de fecha manual o simple para que diga DD-MM-AAAA
         String fechaFormateada = fecha.getDayOfMonth() + "-" + fecha.getMonthValue() + "-" + fecha.getYear();
-
-        return "Turno N°" + id + ", " +
-                "\n  Paciente= " + paciente.getNombre() + " " + paciente.getApellido() +
-                "\n  Odontologo=" + odontologo.getApellido() +
-                "\n  Dia " + fechaFormateada + " a las " + hora +
-                "\nEstado=" + estado;
+        return "Turno N°" + id + " [" + estado + "]" +
+                "\n  Paciente: " + paciente.getNombre() + " " + paciente.getApellido() +
+                "\n  Odontologo: " + odontologo.getApellido() +
+                "\n  Fecha: " + fechaFormateada + " a las " + hora +
+                "\n  Duración: " + obtenerDuracionMinutos() + " min | Costo: $" + calcularCosto();
     }
 }

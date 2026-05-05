@@ -12,7 +12,17 @@ public class TurnoControl extends Turno {
     }
 
     @Override
+    public int obtenerDuracionMinutos() {
+        return 30; // Los controles son más cortos
+    }
+
+    @Override
+    public double calcularCosto() {
+        return 8000.0; // Los controles son más baratos
+    }
+
+    @Override
     public String toString() {
-        return super.toString() + " | [TIPO: Control - Duración: 30 min]";
+        return super.toString() + " | TIPO: Control";
     }
 }

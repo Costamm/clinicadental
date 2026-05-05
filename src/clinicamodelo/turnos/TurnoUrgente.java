@@ -13,11 +13,21 @@ public class TurnoUrgente extends Turno {
         this.motivoUrgencia = motivoUrgencia;
     }
 
+    @Override
+    public int obtenerDuracionMinutos() {
+        return 60; // Las urgencias tardan más
+    }
+
+    @Override
+    public double calcularCosto() {
+        return 18000.0; // Las urgencias son más caras
+    }
+
     public String getMotivoUrgencia() { return motivoUrgencia; }
     public void setMotivoUrgencia(String motivoUrgencia) { this.motivoUrgencia = motivoUrgencia; }
 
     @Override
     public String toString() {
-        return super.toString() + " | [TIPO: URGENCIA - Motivo: " + motivoUrgencia + "]";
+        return super.toString() + " | TIPO: URGENCIA - Motivo: " + motivoUrgencia;
     }
 }

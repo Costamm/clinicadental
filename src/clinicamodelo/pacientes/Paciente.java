@@ -61,7 +61,9 @@ public class Paciente {
     public void setTurnos(List<Turno> turnos) { this.turnos = turnos;}
 
     public void agregarTurno(Turno t) {
-        this.turnos.add(t);
+        if (t != null && !this.turnos.contains(t)) {
+            this.turnos.add(t);
+        }
     }
 
     @Override
