@@ -1,4 +1,7 @@
-package clinicamodelo;
+package clinicamodelo.grupos;
+
+import clinicamodelo.pacientes.Paciente;
+import clinicamodelo.planes.Plan;
 
 import java.util.ArrayList;
 import java.util.List;

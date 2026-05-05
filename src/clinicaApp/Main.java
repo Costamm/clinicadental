@@ -1,6 +1,12 @@
 package clinicaApp;
 
-import clinicamodelo.*;
+import clinicamodelo.grupos.GrupoFamiliar;
+import clinicamodelo.odontologos.Odontologo;
+import clinicamodelo.pacientes.Domicilio;
+import clinicamodelo.pacientes.Paciente;
+import clinicamodelo.planes.PlanPremium;
+import clinicamodelo.turnos.EstadoTurno;
+import clinicamodelo.turnos.Turno;
 
 import java.time.LocalDate; //manejar fechas
 import java.time.LocalTime; //manejar hora

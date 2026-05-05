@@ -1,4 +1,7 @@
-package clinicamodelo;
+package clinicamodelo.turnos;
+
+import clinicamodelo.pacientes.Paciente;
+import clinicamodelo.odontologos.Odontologo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

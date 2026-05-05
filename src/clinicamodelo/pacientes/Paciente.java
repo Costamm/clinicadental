@@ -1,4 +1,6 @@
-package clinicamodelo;
+package clinicamodelo.pacientes;
+
+import clinicamodelo.turnos.Turno;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package clinicamodelo;
+package clinicamodelo.turnos;
 
 public enum EstadoTurno {
     PENDIENTE,

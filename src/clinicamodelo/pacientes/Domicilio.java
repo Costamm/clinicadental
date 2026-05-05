@@ -1,4 +1,4 @@
-package clinicamodelo;
+package clinicamodelo.pacientes;
 
 public class Domicilio {
     private Long id;

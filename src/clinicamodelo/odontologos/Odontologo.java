@@ -1,4 +1,4 @@
-package clinicamodelo;
+package clinicamodelo.odontologos;
 
 public class Odontologo {
     private Long id;
