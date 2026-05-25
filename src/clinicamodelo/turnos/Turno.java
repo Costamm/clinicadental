@@ -64,10 +64,12 @@ public class Turno {
 
     @Override
     public String toString() {
-        String fechaFormateada = fecha.getDayOfMonth() + "-" + fecha.getMonthValue() + "-" + fecha.getYear();
+        String fechaFormateada = fecha != null ? fecha.getDayOfMonth() + "-" + fecha.getMonthValue() + "-" + fecha.getYear() : "sin fecha";
+        String nombrePaciente = paciente != null ? paciente.getNombre() + " " + paciente.getApellido() : "sin paciente";
+        String nombreOdontologo = odontologo != null ? odontologo.getApellido() : "sin odontologo";
         return "Turno N°" + id + " [" + estado + "]" +
-                "\n  Paciente: " + paciente.getNombre() + " " + paciente.getApellido() +
-                "\n  Odontologo: " + odontologo.getApellido() +
+                "\n  Paciente: " + nombrePaciente +
+                "\n  Odontologo: " + nombreOdontologo +
                 "\n  Fecha: " + fechaFormateada + " a las " + hora +
                 "\n  Duración: " + obtenerDuracionMinutos() + " min | Costo: $" + calcularCosto();
     }

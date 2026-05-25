@@ -7,13 +7,11 @@ import clinicaservice.ServicioOdontologo;
 import clinicaservice.ServicioPaciente;
 import clinicaservice.ServicioTurno;
 
-
-
 public class Main {
     public static void main(String[] args) {
         RepositorioPaciente repositorioPaciente = new RepositorioPaciente();
         RepositorioOdontologo repositorioOdontologo = new RepositorioOdontologo();
-        RepositorioTurno repositorioTurno = new RepositorioTurno();
+        RepositorioTurno repositorioTurno = new RepositorioTurno(repositorioPaciente, repositorioOdontologo);
 
         ServicioPaciente servicioPaciente = new ServicioPaciente(repositorioPaciente);
         ServicioOdontologo servicioOdontologo = new ServicioOdontologo(repositorioOdontologo);

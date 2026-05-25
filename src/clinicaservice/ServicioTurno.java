@@ -115,7 +115,7 @@ public class ServicioTurno {
             throw new DatoInvalidoException("El id del odontologo es obligatorio.");
         }
         return repositorioTurno.listarTodos().stream()
-                .filter(t -> t.getOdontologo().getId().equals(odontologoId))
+                .filter(t -> t.getOdontologo() != null && t.getOdontologo().getId().equals(odontologoId))
                 .collect(Collectors.toList());
     }
 
@@ -201,10 +201,10 @@ public class ServicioTurno {
             boolean mismoHorario = turnoRegistrado.getFecha().equals(fecha) && turnoRegistrado.getHora().equals(hora);
 
             if (!mismoTurno && !turnoCancelado && mismoHorario) {
-                if (turnoRegistrado.getPaciente().getId().equals(paciente.getId())) {
+                if (turnoRegistrado.getPaciente() != null && turnoRegistrado.getPaciente().getId().equals(paciente.getId())) {
                     throw new TurnoYaReservadoException("El paciente ya tiene un turno asignado el día " + fecha + " a las " + hora + ".");
                 }
-                if (turnoRegistrado.getOdontologo().getId().equals(odontologo.getId())) {
+                if (turnoRegistrado.getOdontologo() != null && turnoRegistrado.getOdontologo().getId().equals(odontologo.getId())) {
                     throw new TurnoYaReservadoException("El odontólogo ya tiene un turno reservado el día " + fecha + " a las " + hora + ".");
                 }
             }

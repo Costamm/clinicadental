@@ -510,7 +510,7 @@ public class MenuConsola {
 
     private boolean odontologoTieneTurnos(Long odontologoId) {
         for (Turno turno : servicioTurno.listarTodos()) {
-            if (turno.getOdontologo().getId().equals(odontologoId)) {
+            if (turno.getOdontologo() != null && turno.getOdontologo().getId().equals(odontologoId)) {
                 return true;
             }
         }

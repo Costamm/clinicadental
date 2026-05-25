@@ -1,5 +1,6 @@
 package clinicarepository;
 
+import clinicaio.PersistenciaPaciente;
 import clinicamodelo.pacientes.Paciente;
 
 import java.util.ArrayList;
@@ -9,6 +10,17 @@ import java.util.Map;
 
 public class RepositorioPaciente implements IRepositorio<Paciente> {
     private final Map<Long, Paciente> pacientes = new HashMap<>();
+    private final PersistenciaPaciente persistencia = new PersistenciaPaciente();
+
+    public RepositorioPaciente() {
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        for (Paciente p : persistencia.cargar()) {
+            pacientes.put(p.getId(), p);
+        }
+    }
 
     @Override
     public boolean guardar(Paciente paciente) {
@@ -20,6 +32,7 @@ public class RepositorioPaciente implements IRepositorio<Paciente> {
             return false;
         }
         pacientes.put(paciente.getId(), paciente);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -42,6 +55,7 @@ public class RepositorioPaciente implements IRepositorio<Paciente> {
             return false;
         }
         pacientes.put(paciente.getId(), paciente);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -51,6 +65,7 @@ public class RepositorioPaciente implements IRepositorio<Paciente> {
             return false;
         }
         pacientes.remove(id);
+        persistencia.guardar(listarTodos());
         return true;
     }
 

@@ -1,5 +1,8 @@
 package clinicarepository;
 
+import clinicaio.PersistenciaTurno;
+import clinicamodelo.odontologos.Odontologo;
+import clinicamodelo.pacientes.Paciente;
 import clinicamodelo.turnos.Turno;
 
 import java.util.ArrayList;
@@ -9,6 +12,17 @@ import java.util.Map;
 
 public class RepositorioTurno implements IRepositorio<Turno> {
     private final Map<Long, Turno> turnos = new HashMap<>();
+    private final PersistenciaTurno persistencia = new PersistenciaTurno();
+
+    public RepositorioTurno(IRepositorio<Paciente> repoPaciente, IRepositorio<Odontologo> repoOdontologo) {
+        cargarDatos(repoPaciente, repoOdontologo);
+    }
+
+    private void cargarDatos(IRepositorio<Paciente> repoPaciente, IRepositorio<Odontologo> repoOdontologo) {
+        for (Turno t : persistencia.cargar(repoPaciente, repoOdontologo)) {
+            turnos.put(t.getId(), t);
+        }
+    }
 
     @Override
     public boolean guardar(Turno turno) {
@@ -20,6 +34,7 @@ public class RepositorioTurno implements IRepositorio<Turno> {
             return false;
         }
         turnos.put(turno.getId(), turno);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -42,6 +57,7 @@ public class RepositorioTurno implements IRepositorio<Turno> {
             return false;
         }
         turnos.put(turno.getId(), turno);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -51,6 +67,7 @@ public class RepositorioTurno implements IRepositorio<Turno> {
             return false;
         }
         turnos.remove(id);
+        persistencia.guardar(listarTodos());
         return true;
     }
 

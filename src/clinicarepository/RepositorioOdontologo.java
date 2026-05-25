@@ -1,5 +1,6 @@
 package clinicarepository;
 
+import clinicaio.PersistenciaOdontologo;
 import clinicamodelo.odontologos.Odontologo;
 
 import java.util.ArrayList;
@@ -9,6 +10,17 @@ import java.util.Map;
 
 public class RepositorioOdontologo implements IRepositorio<Odontologo> {
     private final Map<Long, Odontologo> odontologos = new HashMap<>();
+    private final PersistenciaOdontologo persistencia = new PersistenciaOdontologo();
+
+    public RepositorioOdontologo() {
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        for (Odontologo o : persistencia.cargar()) {
+            odontologos.put(o.getId(), o);
+        }
+    }
 
     @Override
     public boolean guardar(Odontologo odontologo) {
@@ -20,6 +32,7 @@ public class RepositorioOdontologo implements IRepositorio<Odontologo> {
             return false;
         }
         odontologos.put(odontologo.getId(), odontologo);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -42,6 +55,7 @@ public class RepositorioOdontologo implements IRepositorio<Odontologo> {
             return false;
         }
         odontologos.put(odontologo.getId(), odontologo);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
@@ -51,6 +65,7 @@ public class RepositorioOdontologo implements IRepositorio<Odontologo> {
             return false;
         }
         odontologos.remove(id);
+        persistencia.guardar(listarTodos());
         return true;
     }
 
