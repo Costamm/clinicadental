@@ -2,6 +2,8 @@ package clinicaservice;
 
 import clinicamodelo.odontologos.Odontologo;
 import clinicarepository.IRepositorio;
+import clinicaexception.OdontologoNoEncontradoException;
+import clinicaexception.DatoInvalidoException;
 import java.util.List;
 
 public class ServicioOdontologo {
@@ -11,100 +13,73 @@ public class ServicioOdontologo {
         this.repositorioOdontologo = repositorioOdontologo;
     }
 
-    public boolean guardar(Odontologo odontologo) {
-        if (!validarOdontologo(odontologo)) {
-            return false;
-        }
-        if (!validarMatriculaDisponible(odontologo)) {
-            return false;
-        }
+    public boolean guardar(Odontologo odontologo) throws DatoInvalidoException {
+        validarOdontologo(odontologo);
+        validarMatriculaDisponible(odontologo);
         return repositorioOdontologo.guardar(odontologo);
     }
 
-    public Odontologo buscarPorId(Long id) {
-        if (!validarId(id)) {
-            return null;
+    public Odontologo buscarPorId(Long id) throws OdontologoNoEncontradoException, DatoInvalidoException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del odontologo es obligatorio.");
         }
-        return repositorioOdontologo.buscarPorId(id);
+        Odontologo odontologo = repositorioOdontologo.buscarPorId(id);
+        if (odontologo == null) {
+            throw new OdontologoNoEncontradoException("No existe un odontologo con id " + id + ".");
+        }
+        return odontologo;
     }
 
     public List<Odontologo> listarTodos() {
         return repositorioOdontologo.listarTodos();
     }
 
-    public boolean actualizar(Odontologo odontologo) {
-        if (!validarOdontologo(odontologo)) {
-            return false;
+    public boolean actualizar(Odontologo odontologo) throws OdontologoNoEncontradoException, DatoInvalidoException {
+        validarOdontologo(odontologo);
+
+        if (repositorioOdontologo.buscarPorId(odontologo.getId()) == null) {
+            throw new OdontologoNoEncontradoException("No se puede actualizar: No existe un odontologo con id " + odontologo.getId() + ".");
         }
-        if (!validarExistencia(odontologo.getId())) {
-            return false;
-        }
-        if (!validarMatriculaDisponible(odontologo)) {
-            return false;
-        }
+
+        validarMatriculaDisponible(odontologo);
         return repositorioOdontologo.actualizar(odontologo);
     }
 
-    public boolean eliminar(Long id) {
-        if (!validarId(id)) {
-            return false;
+    public boolean eliminar(Long id) throws OdontologoNoEncontradoException, DatoInvalidoException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del odontologo es obligatorio.");
         }
-        if (!validarExistencia(id)) {
-            return false;
+        if (repositorioOdontologo.buscarPorId(id) == null) {
+            throw new OdontologoNoEncontradoException("No se puede eliminar: No existe un odontologo con id " + id + ".");
         }
         return repositorioOdontologo.eliminar(id);
     }
 
-    private boolean validarOdontologo(Odontologo odontologo) {
+    private void validarOdontologo(Odontologo odontologo) throws DatoInvalidoException {
         if (odontologo == null) {
-            System.out.println("El odontologo es obligatorio.");
-            return false;
+            throw new DatoInvalidoException("El odontologo es obligatorio.");
         }
-        if (!validarId(odontologo.getId())) {
-            return false;
+        if (odontologo.getId() == null) {
+            throw new DatoInvalidoException("El id del odontologo es obligatorio.");
         }
-        if (!validarTexto(odontologo.getNombre(), "El nombre del odontologo es obligatorio.")) {
-            return false;
+        if (odontologo.getNombre() == null || odontologo.getNombre().trim().isEmpty()) {
+            throw new DatoInvalidoException("El nombre del odontologo es obligatorio.");
         }
-        if (!validarTexto(odontologo.getApellido(), "El apellido del odontologo es obligatorio.")) {
-            return false;
+        if (odontologo.getApellido() == null || odontologo.getApellido().trim().isEmpty()) {
+            throw new DatoInvalidoException("El apellido del odontologo es obligatorio.");
         }
-        return validarTexto(odontologo.getMatricula(), "La matricula del odontologo es obligatoria.");
+        if (odontologo.getMatricula() == null || odontologo.getMatricula().trim().isEmpty()) {
+            throw new DatoInvalidoException("La matricula del odontologo es obligatoria.");
+        }
     }
 
-    private boolean validarMatriculaDisponible(Odontologo odontologo) {
+    private void validarMatriculaDisponible(Odontologo odontologo) throws DatoInvalidoException {
         for (Odontologo odontologoRegistrado : repositorioOdontologo.listarTodos()) {
             boolean mismaMatricula = odontologoRegistrado.getMatricula().equals(odontologo.getMatricula());
             boolean distintoId = !odontologoRegistrado.getId().equals(odontologo.getId());
             if (mismaMatricula && distintoId) {
-                System.out.println("Ya existe un odontologo registrado con matricula " + odontologo.getMatricula() + ".");
-                return false;
+                throw new DatoInvalidoException("Ya existe un odontologo registrado con matricula " + odontologo.getMatricula() + ".");
             }
         }
-        return true;
-    }
-
-    private boolean validarExistencia(Long id) {
-        if (repositorioOdontologo.buscarPorId(id) == null) {
-            System.out.println("No existe un odontologo con id " + id + ".");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarId(Long id) {
-        if (id == null) {
-            System.out.println("El id del odontologo es obligatorio.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarTexto(String valor, String mensaje) {
-        if (valor == null || valor.trim().isEmpty()) {
-            System.out.println(mensaje);
-            return false;
-        }
-        return true;
     }
 }

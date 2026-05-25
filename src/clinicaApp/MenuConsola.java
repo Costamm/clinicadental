@@ -8,6 +8,7 @@ import clinicamodelo.turnos.Turno;
 import clinicaservice.ServicioOdontologo;
 import clinicaservice.ServicioPaciente;
 import clinicaservice.ServicioTurno;
+import clinicaexception.ClinicaException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -131,16 +132,24 @@ public class MenuConsola {
     }
 
     private void crearPaciente() {
-        Paciente paciente = leerPaciente();
-        if (servicioPaciente.guardar(paciente)) {
-            System.out.println("Paciente creado correctamente.");
+        try {
+            Paciente paciente = leerPaciente();
+            if (servicioPaciente.guardar(paciente)) {
+                System.out.println("Paciente creado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void buscarPaciente() {
-        Long id = leerLong("ID del paciente: ");
-        Paciente paciente = servicioPaciente.buscarPorId(id);
-        System.out.println(paciente != null ? paciente : "No se encontro paciente con ese ID.");
+        try {
+            Long id = leerLong("ID del paciente: ");
+            Paciente paciente = servicioPaciente.buscarPorId(id);
+            System.out.println(paciente);
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
     }
 
     private void listarPacientes() {
@@ -155,48 +164,41 @@ public class MenuConsola {
     }
 
     private void actualizarPaciente() {
-        Long id = leerLong("ID del paciente a actualizar: ");
-        Paciente existente = servicioPaciente.buscarPorId(id);
-        if (existente == null) {
-            System.out.println("No se encontro paciente con ese ID.");
-            return;
-        }
+        try {
+            Long id = leerLong("ID del paciente a actualizar: ");
+            // Validamos que exista primero
+            Paciente existente = servicioPaciente.buscarPorId(id);
 
-        System.out.println("Ingrese los nuevos datos del paciente.");
-        String nombre = leerTextoObligatorio("Nombre: ");
-        String apellido = leerTextoObligatorio("Apellido: ");
-        String dni = leerTextoObligatorio("DNI: ");
-        String telefono = leerTextoObligatorio("Telefono: ");
-        String email = leerTextoObligatorio("Email: ");
-        Domicilio domicilio = leerDomicilio();
-        if (!validarDniDisponible(id, dni)) {
-            return;
-        }
+            System.out.println("Ingrese los nuevos datos del paciente.");
+            existente.setNombre(leerTextoObligatorio("Nombre: "));
+            existente.setApellido(leerTextoObligatorio("Apellido: "));
+            existente.setDni(leerTextoObligatorio("DNI: "));
+            existente.setTelefono(leerTextoObligatorio("Telefono: "));
+            existente.setEmail(leerTextoObligatorio("Email: "));
+            existente.setDomicilio(leerDomicilio());
 
-        existente.setNombre(nombre);
-        existente.setApellido(apellido);
-        existente.setDni(dni);
-        existente.setTelefono(telefono);
-        existente.setEmail(email);
-        existente.setDomicilio(domicilio);
-        if (servicioPaciente.actualizar(existente)) {
-            System.out.println("Paciente actualizado correctamente.");
+            if (servicioPaciente.actualizar(existente)) {
+                System.out.println("Paciente actualizado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void eliminarPaciente() {
-        Long id = leerLong("ID del paciente a eliminar: ");
-        Paciente paciente = servicioPaciente.buscarPorId(id);
-        if (paciente == null) {
-            System.out.println("No se encontro paciente con ese ID.");
-            return;
-        }
-        if (!paciente.getTurnos().isEmpty()) {
-            System.out.println("No se puede eliminar: el paciente tiene turnos asociados.");
-            return;
-        }
-        if (servicioPaciente.eliminar(id)) {
-            System.out.println("Paciente eliminado correctamente.");
+        try {
+            Long id = leerLong("ID del paciente a eliminar: ");
+            Paciente paciente = servicioPaciente.buscarPorId(id);
+
+            if (!paciente.getTurnos().isEmpty()) {
+                System.out.println("ERROR: No se puede eliminar: el paciente tiene turnos asociados.");
+                return;
+            }
+            if (servicioPaciente.eliminar(id)) {
+                System.out.println("Paciente eliminado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
@@ -226,16 +228,24 @@ public class MenuConsola {
     }
 
     private void crearOdontologo() {
-        Odontologo odontologo = leerOdontologo();
-        if (servicioOdontologo.guardar(odontologo)) {
-            System.out.println("Odontologo creado correctamente.");
+        try {
+            Odontologo odontologo = leerOdontologo();
+            if (servicioOdontologo.guardar(odontologo)) {
+                System.out.println("Odontologo creado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void buscarOdontologo() {
-        Long id = leerLong("ID del odontologo: ");
-        Odontologo odontologo = servicioOdontologo.buscarPorId(id);
-        System.out.println(odontologo != null ? odontologo : "No se encontro odontologo con ese ID.");
+        try {
+            Long id = leerLong("ID del odontologo: ");
+            Odontologo odontologo = servicioOdontologo.buscarPorId(id);
+            System.out.println(odontologo);
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
     }
 
     private void listarOdontologos() {
@@ -250,42 +260,37 @@ public class MenuConsola {
     }
 
     private void actualizarOdontologo() {
-        Long id = leerLong("ID del odontologo a actualizar: ");
-        Odontologo existente = servicioOdontologo.buscarPorId(id);
-        if (existente == null) {
-            System.out.println("No se encontro odontologo con ese ID.");
-            return;
-        }
+        try {
+            Long id = leerLong("ID del odontologo a actualizar: ");
+            Odontologo existente = servicioOdontologo.buscarPorId(id);
 
-        System.out.println("Ingrese los nuevos datos del odontologo.");
-        String nombre = leerTextoObligatorio("Nombre: ");
-        String apellido = leerTextoObligatorio("Apellido: ");
-        String matricula = leerTextoObligatorio("Matricula: ");
-        if (!validarMatriculaDisponible(id, matricula)) {
-            return;
-        }
+            System.out.println("Ingrese los nuevos datos del odontologo.");
+            existente.setNombre(leerTextoObligatorio("Nombre: "));
+            existente.setApellido(leerTextoObligatorio("Apellido: "));
+            existente.setMatricula(leerTextoObligatorio("Matricula: "));
 
-        existente.setNombre(nombre);
-        existente.setApellido(apellido);
-        existente.setMatricula(matricula);
-        if (servicioOdontologo.actualizar(existente)) {
-            System.out.println("Odontologo actualizado correctamente.");
+            if (servicioOdontologo.actualizar(existente)) {
+                System.out.println("Odontologo actualizado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void eliminarOdontologo() {
-        Long id = leerLong("ID del odontologo a eliminar: ");
-        Odontologo odontologo = servicioOdontologo.buscarPorId(id);
-        if (odontologo == null) {
-            System.out.println("No se encontro odontologo con ese ID.");
-            return;
-        }
-        if (odontologoTieneTurnos(id)) {
-            System.out.println("No se puede eliminar: el odontologo tiene turnos asociados.");
-            return;
-        }
-        if (servicioOdontologo.eliminar(id)) {
-            System.out.println("Odontologo eliminado correctamente.");
+        try {
+            Long id = leerLong("ID del odontologo a eliminar: ");
+            servicioOdontologo.buscarPorId(id);
+
+            if (odontologoTieneTurnos(id)) {
+                System.out.println("ERROR: No se puede eliminar: el odontologo tiene turnos asociados.");
+                return;
+            }
+            if (servicioOdontologo.eliminar(id)) {
+                System.out.println("Odontologo eliminado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
@@ -302,44 +307,44 @@ public class MenuConsola {
     }
 
     private void crearTurno() {
-        Long id = leerLong("ID del turno: ");
-        Long pacienteId = leerLong("ID del paciente: ");
-        Long odontologoId = leerLong("ID del odontologo: ");
-        LocalDate fecha = leerFecha("Fecha (AAAA-MM-DD): ");
-        LocalTime hora = leerHora("Hora (HH:MM): ");
+        try {
+            Long id = leerLong("ID del turno: ");
+            Long pacienteId = leerLong("ID del paciente: ");
+            Long odontologoId = leerLong("ID del odontologo: ");
+            LocalDate fecha = leerFecha("Fecha (AAAA-MM-DD): ");
+            LocalTime hora = leerHora("Hora (HH:MM): ");
 
-        System.out.println("Tipo de turno");
-        System.out.println("1. Comun");
-        System.out.println("2. Control");
-        System.out.println("3. Urgente");
-        int tipo = leerEntero("Seleccione tipo: ");
+            System.out.println("Tipo de turno\n1. Comun\n2. Control\n3. Urgente");
+            int tipo = leerEntero("Seleccione tipo: ");
 
-        Turno turno;
-        switch (tipo) {
-            case 1 -> turno = servicioTurno.crearTurno(id, pacienteId, odontologoId, fecha, hora);
-            case 2 -> turno = servicioTurno.crearTurnoControl(id, pacienteId, odontologoId, fecha, hora);
-            case 3 -> {
-                String motivo = leerTextoObligatorio("Motivo de urgencia: ");
-                turno = servicioTurno.crearTurnoUrgente(id, pacienteId, odontologoId, fecha, hora, motivo);
+            Turno turno;
+            switch (tipo) {
+                case 1 -> turno = servicioTurno.crearTurno(id, pacienteId, odontologoId, fecha, hora);
+                case 2 -> turno = servicioTurno.crearTurnoControl(id, pacienteId, odontologoId, fecha, hora);
+                case 3 -> {
+                    String motivo = leerTextoObligatorio("Motivo de urgencia: ");
+                    turno = servicioTurno.crearTurnoUrgente(id, pacienteId, odontologoId, fecha, hora, motivo);
+                }
+                default -> {
+                    System.out.println("Tipo de turno invalido.");
+                    return;
+                }
             }
-            default -> {
-                System.out.println("Tipo de turno invalido.");
-                return;
-            }
-        }
 
-        if (turno == null) {
-            return;
+            System.out.println("Turno creado correctamente.\n" + turno);
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
-
-        System.out.println("Turno creado correctamente.");
-        System.out.println(turno);
     }
 
     private void buscarTurno() {
-        Long id = leerLong("ID del turno: ");
-        Turno turno = servicioTurno.buscarPorId(id);
-        System.out.println(turno != null ? turno : "No se encontro turno con ese ID.");
+        try {
+            Long id = leerLong("ID del turno: ");
+            Turno turno = servicioTurno.buscarPorId(id);
+            System.out.println(turno);
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
     }
 
     private void listarTurnos() {
@@ -355,35 +360,41 @@ public class MenuConsola {
     }
 
     private void actualizarTurno() {
-        Long id = leerLong("ID del turno a actualizar: ");
-        Turno turno = servicioTurno.buscarPorId(id);
-        if (turno == null) {
-            System.out.println("No se encontro turno con ese ID.");
-            return;
-        }
+        try {
+            Long id = leerLong("ID del turno a actualizar: ");
+            Turno turno = servicioTurno.buscarPorId(id);
 
-        LocalDate fecha = leerFecha("Nueva fecha (AAAA-MM-DD): ");
-        LocalTime hora = leerHora("Nueva hora (HH:MM): ");
-        EstadoTurno estado = leerEstadoTurno();
-        turno.setFecha(fecha);
-        turno.setHora(hora);
-        turno.setEstado(estado);
-        if (servicioTurno.actualizar(turno)) {
-            System.out.println("Turno actualizado correctamente.");
+            turno.setFecha(leerFecha("Nueva fecha (AAAA-MM-DD): "));
+            turno.setHora(leerHora("Nueva hora (HH:MM): "));
+            turno.setEstado(leerEstadoTurno());
+
+            if (servicioTurno.actualizar(turno)) {
+                System.out.println("Turno actualizado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void eliminarTurno() {
-        Long id = leerLong("ID del turno a eliminar: ");
-        if (servicioTurno.eliminar(id)) {
-            System.out.println("Turno eliminado correctamente.");
+        try {
+            Long id = leerLong("ID del turno a eliminar: ");
+            if (servicioTurno.eliminar(id)) {
+                System.out.println("Turno eliminado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     private void cancelarTurno() {
-        Long id = leerLong("ID del turno a cancelar: ");
-        if (servicioTurno.cancelar(id)) {
-            System.out.println("Turno cancelado correctamente.");
+        try {
+            Long id = leerLong("ID del turno a cancelar: ");
+            if (servicioTurno.cancelar(id)) {
+                System.out.println("Turno cancelado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
@@ -417,26 +428,6 @@ public class MenuConsola {
             }
         }
         return false;
-    }
-
-    private boolean validarDniDisponible(Long pacienteId, String dni) {
-        for (Paciente paciente : servicioPaciente.listarTodos()) {
-            if (!paciente.getId().equals(pacienteId) && paciente.getDni().equals(dni)) {
-                System.out.println("Ya existe un paciente registrado con DNI " + dni + ".");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validarMatriculaDisponible(Long odontologoId, String matricula) {
-        for (Odontologo odontologo : servicioOdontologo.listarTodos()) {
-            if (!odontologo.getId().equals(odontologoId) && odontologo.getMatricula().equals(matricula)) {
-                System.out.println("Ya existe un odontologo registrado con matricula " + matricula + ".");
-                return false;
-            }
-        }
-        return true;
     }
 
     private int leerEntero(String mensaje) {

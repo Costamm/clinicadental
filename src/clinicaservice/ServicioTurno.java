@@ -7,6 +7,11 @@ import clinicamodelo.turnos.Turno;
 import clinicamodelo.turnos.TurnoControl;
 import clinicamodelo.turnos.TurnoUrgente;
 import clinicarepository.IRepositorio;
+import clinicaexception.ClinicaException;
+import clinicaexception.DatoInvalidoException;
+import clinicaexception.TurnoYaReservadoException;
+import clinicaexception.PacienteNoEncontradoException;
+import clinicaexception.OdontologoNoEncontradoException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,16 +30,13 @@ public class ServicioTurno {
         this.repositorioOdontologo = repositorioOdontologo;
     }
 
-    public Turno crearTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora) {
+    public Turno crearTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora) throws ClinicaException {
         return crearTurno(id, pacienteId, odontologoId, fecha, hora, false);
     }
 
-    public Turno crearTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) {
+    public Turno crearTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) throws ClinicaException {
         Paciente paciente = validarDatosNuevoTurno(id, pacienteId, odontologoId, fecha, hora, autoAsignado);
         Odontologo odontologo = buscarOdontologoExistente(odontologoId);
-        if (paciente == null || odontologo == null) {
-            return null;
-        }
 
         Turno turno = new Turno(id, null, odontologo, fecha, hora, EstadoTurno.PENDIENTE);
         sincronizarPacienteTurno(turno, paciente);
@@ -43,16 +45,13 @@ public class ServicioTurno {
         return turno;
     }
 
-    public TurnoControl crearTurnoControl(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora) {
+    public TurnoControl crearTurnoControl(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora) throws ClinicaException {
         return crearTurnoControl(id, pacienteId, odontologoId, fecha, hora, false);
     }
 
-    public TurnoControl crearTurnoControl(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) {
+    public TurnoControl crearTurnoControl(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) throws ClinicaException {
         Paciente paciente = validarDatosNuevoTurno(id, pacienteId, odontologoId, fecha, hora, autoAsignado);
         Odontologo odontologo = buscarOdontologoExistente(odontologoId);
-        if (paciente == null || odontologo == null) {
-            return null;
-        }
 
         TurnoControl turno = new TurnoControl(id, null, odontologo, fecha, hora, EstadoTurno.PENDIENTE);
         sincronizarPacienteTurno(turno, paciente);
@@ -61,19 +60,16 @@ public class ServicioTurno {
         return turno;
     }
 
-    public TurnoUrgente crearTurnoUrgente(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, String motivoUrgencia) {
+    public TurnoUrgente crearTurnoUrgente(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, String motivoUrgencia) throws ClinicaException {
         return crearTurnoUrgente(id, pacienteId, odontologoId, fecha, hora, motivoUrgencia, false);
     }
 
-    public TurnoUrgente crearTurnoUrgente(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, String motivoUrgencia, boolean autoAsignado) {
-        if (!validarTexto(motivoUrgencia, "El motivo de urgencia es obligatorio.")) {
-            return null;
+    public TurnoUrgente crearTurnoUrgente(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, String motivoUrgencia, boolean autoAsAssignado) throws ClinicaException {
+        if (motivoUrgencia == null || motivoUrgencia.trim().isEmpty()) {
+            throw new DatoInvalidoException("El motivo de urgencia es obligatorio.");
         }
-        Paciente paciente = validarDatosNuevoTurno(id, pacienteId, odontologoId, fecha, hora, autoAsignado);
+        Paciente paciente = validarDatosNuevoTurno(id, pacienteId, odontologoId, fecha, hora, autoAsAssignado);
         Odontologo odontologo = buscarOdontologoExistente(odontologoId);
-        if (paciente == null || odontologo == null) {
-            return null;
-        }
 
         TurnoUrgente turno = new TurnoUrgente(id, null, odontologo, fecha, hora, EstadoTurno.PENDIENTE, motivoUrgencia);
         sincronizarPacienteTurno(turno, paciente);
@@ -82,50 +78,45 @@ public class ServicioTurno {
         return turno;
     }
 
-    public Turno buscarPorId(Long id) {
-        if (!validarId(id, "El id del turno es obligatorio.")) {
-            return null;
+    public Turno buscarPorId(Long id) throws ClinicaException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del turno es obligatorio.");
         }
-        return repositorioTurno.buscarPorId(id);
+        Turno turno = repositorioTurno.buscarPorId(id);
+        if (turno == null) {
+            throw new DatoInvalidoException("No existe un turno con id " + id + ".");
+        }
+        return turno;
     }
 
     public List<Turno> listarTodos() {
         return repositorioTurno.listarTodos();
     }
 
-    public boolean actualizar(Turno turno) {
-        if (!validarTurno(turno)) {
-            return false;
+    public boolean actualizar(Turno turno) throws ClinicaException {
+        validarTurno(turno);
+        if (repositorioTurno.buscarPorId(turno.getId()) == null) {
+            throw new DatoInvalidoException("No existe un turno con id " + turno.getId() + ".");
         }
-        if (!validarExistencia(turno.getId())) {
-            return false;
-        }
-        if (!validarDisponibilidad(turno.getId(), turno.getPaciente(), turno.getOdontologo(), turno.getFecha(), turno.getHora())) {
-            return false;
-        }
+        validarDisponibilidad(turno.getId(), turno.getPaciente(), turno.getOdontologo(), turno.getFecha(), turno.getHora());
+
         sincronizarPacienteTurno(turno, turno.getPaciente());
         repositorioTurno.actualizar(turno);
         repositorioPaciente.actualizar(turno.getPaciente());
         return true;
     }
 
-    public boolean cancelar(Long id) {
+    public boolean cancelar(Long id) throws ClinicaException {
         Turno turno = buscarTurnoExistente(id);
-        if (turno == null) {
-            return false;
-        }
         turno.cancelarTurno();
         return repositorioTurno.actualizar(turno);
     }
 
-    public boolean eliminar(Long id) {
-        if (!validarId(id, "El id del turno es obligatorio.")) {
-            return false;
+    public boolean eliminar(Long id) throws ClinicaException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del turno es obligatorio.");
         }
         Turno turno = buscarTurnoExistente(id);
-        if (turno == null) {
-            return false;
-        }
         if (turno.getPaciente() != null) {
             turno.getPaciente().getTurnos().remove(turno);
             repositorioPaciente.actualizar(turno.getPaciente());
@@ -133,162 +124,112 @@ public class ServicioTurno {
         return repositorioTurno.eliminar(id);
     }
 
-    private boolean validarTurno(Turno turno) {
+    private void validarTurno(Turno turno) throws ClinicaException {
         if (turno == null) {
-            System.out.println("El turno es obligatorio.");
-            return false;
+            throw new DatoInvalidoException("El turno es obligatorio.");
         }
-        if (!validarId(turno.getId(), "El id del turno es obligatorio.")) {
-            return false;
+        if (turno.getId() == null) {
+            throw new DatoInvalidoException("El id del turno es obligatorio.");
         }
         if (turno.getPaciente() == null || turno.getPaciente().getId() == null) {
-            System.out.println("El paciente del turno es obligatorio.");
-            return false;
+            throw new DatoInvalidoException("El paciente del turno es obligatorio.");
         }
         if (turno.getOdontologo() == null || turno.getOdontologo().getId() == null) {
-            System.out.println("El odontologo del turno es obligatorio.");
-            return false;
+            throw new DatoInvalidoException("El odontologo del turno es obligatorio.");
         }
-        if (buscarPacienteExistente(turno.getPaciente().getId()) == null) {
-            return false;
-        }
-        if (buscarOdontologoExistente(turno.getOdontologo().getId()) == null) {
-            return false;
-        }
-        if (!validarDatosFechaHora(turno.getFecha(), turno.getHora())) {
-            return false;
-        }
+
+        buscarPacienteExistente(turno.getPaciente().getId());
+        buscarOdontologoExistente(turno.getOdontologo().getId());
+        validarDatosFechaHora(turno.getFecha(), turno.getHora());
+
         if (turno.getEstado() == null) {
             turno.setEstado(EstadoTurno.PENDIENTE);
         }
-        return true;
     }
 
-    private boolean validarDatosFechaHora(LocalDate fecha, LocalTime hora) {
+    private void validarDatosFechaHora(LocalDate fecha, LocalTime hora) throws DatoInvalidoException {
         if (fecha == null) {
-            System.out.println("La fecha del turno es obligatoria.");
-            return false;
+            throw new DatoInvalidoException("La fecha del turno es obligatoria.");
         }
         if (hora == null) {
-            System.out.println("La hora del turno es obligatoria.");
-            return false;
+            throw new DatoInvalidoException("La hora del turno es obligatoria.");
         }
         if (fecha.isBefore(LocalDate.now())) {
-            System.out.println("No se puede crear un turno en una fecha pasada.");
-            return false;
+            throw new DatoInvalidoException("No se puede crear un turno en una fecha pasada.");
         }
-        return true;
     }
 
-    private boolean validarDisponibilidad(Long turnoIdActual, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora) {
+    private void validarDisponibilidad(Long turnoIdActual, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora) throws TurnoYaReservadoException {
         for (Turno turnoRegistrado : repositorioTurno.listarTodos()) {
             boolean mismoTurno = turnoIdActual != null && turnoIdActual.equals(turnoRegistrado.getId());
             boolean turnoCancelado = turnoRegistrado.getEstado() == EstadoTurno.CANCELADO;
             boolean mismoHorario = turnoRegistrado.getFecha().equals(fecha) && turnoRegistrado.getHora().equals(hora);
-            if (!mismoTurno && !turnoCancelado && mismoHorario && turnoRegistrado.getPaciente().getId().equals(paciente.getId())) {
-                System.out.println("El paciente ya tiene un turno en ese dia y horario.");
-                return false;
-            }
-            if (!mismoTurno && !turnoCancelado && mismoHorario && turnoRegistrado.getOdontologo().getId().equals(odontologo.getId())) {
-                System.out.println("El odontologo ya tiene un turno en ese dia y horario.");
-                return false;
+
+            if (!mismoTurno && !turnoCancelado && mismoHorario) {
+                if (turnoRegistrado.getPaciente().getId().equals(paciente.getId())) {
+                    throw new TurnoYaReservadoException("El paciente ya tiene un turno asignado el día " + fecha + " a las " + hora + ".");
+                }
+                if (turnoRegistrado.getOdontologo().getId().equals(odontologo.getId())) {
+                    throw new TurnoYaReservadoException("El odontólogo ya tiene un turno reservado el día " + fecha + " a las " + hora + ".");
+                }
             }
         }
-        return true;
     }
 
     private void sincronizarPacienteTurno(Turno turno, Paciente paciente) {
         turno.setPaciente(paciente);
     }
 
-    private Turno buscarTurnoExistente(Long id) {
-        if (!validarId(id, "El id del turno es obligatorio.")) {
-            return null;
+    private Turno buscarTurnoExistente(Long id) throws ClinicaException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del turno es obligatorio.");
         }
         Turno turno = repositorioTurno.buscarPorId(id);
         if (turno == null) {
-            System.out.println("No existe un turno con id " + id + ".");
+            throw new DatoInvalidoException("No existe un turno con id " + id + ".");
         }
         return turno;
     }
 
-    private Paciente buscarPacienteExistente(Long id) {
-        if (!validarId(id, "El id del paciente es obligatorio.")) {
-            return null;
+    private Paciente buscarPacienteExistente(Long id) throws ClinicaException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del paciente es obligatorio.");
         }
         Paciente paciente = repositorioPaciente.buscarPorId(id);
         if (paciente == null) {
-            System.out.println("No existe un paciente con id " + id + ".");
+            throw new PacienteNoEncontradoException("No existe un paciente con id " + id + ".");
         }
         return paciente;
     }
 
-    private Odontologo buscarOdontologoExistente(Long id) {
-        if (!validarId(id, "El id del odontologo es obligatorio.")) {
-            return null;
+    private Odontologo buscarOdontologoExistente(Long id) throws ClinicaException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del odontologo es obligatorio.");
         }
         Odontologo odontologo = repositorioOdontologo.buscarPorId(id);
         if (odontologo == null) {
-            System.out.println("No existe un odontologo con id " + id + ".");
+            throw new OdontologoNoEncontradoException("No existe un odontologo con id " + id + ".");
         }
         return odontologo;
     }
 
-    private Paciente validarDatosNuevoTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) {
-        if (!validarNoAutoAsignacion(autoAsignado)) {
-            return null;
+    private Paciente validarDatosNuevoTurno(Long id, Long pacienteId, Long odontologoId, LocalDate fecha, LocalTime hora, boolean autoAsignado) throws ClinicaException {
+        if (autoAsignado) {
+            throw new DatoInvalidoException("Un paciente no puede autoasignarse turnos.");
         }
-        if (!validarId(id, "El id del turno es obligatorio.")) {
-            return null;
+        if (id == null) {
+            throw new DatoInvalidoException("El id del turno es obligatorio.");
         }
-        if (!validarDatosFechaHora(fecha, hora)) {
-            return null;
-        }
+        validarDatosFechaHora(fecha, hora);
+
         if (repositorioTurno.buscarPorId(id) != null) {
-            System.out.println("Ya existe un turno con id " + id + ".");
-            return null;
+            throw new DatoInvalidoException("Ya existe un turno con id " + id + ".");
         }
 
         Paciente paciente = buscarPacienteExistente(pacienteId);
         Odontologo odontologo = buscarOdontologoExistente(odontologoId);
-        if (paciente == null || odontologo == null) {
-            return null;
-        }
-        if (!validarDisponibilidad(null, paciente, odontologo, fecha, hora)) {
-            return null;
-        }
+
+        validarDisponibilidad(null, paciente, odontologo, fecha, hora);
         return paciente;
-    }
-
-    private boolean validarNoAutoAsignacion(boolean autoAsignado) {
-        if (autoAsignado) {
-            System.out.println("Un paciente no puede autoasignarse turnos.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarTexto(String valor, String mensaje) {
-        if (valor == null || valor.trim().isEmpty()) {
-            System.out.println(mensaje);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarExistencia(Long id) {
-        if (repositorioTurno.buscarPorId(id) == null) {
-            System.out.println("No existe un turno con id " + id + ".");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarId(Long id, String mensaje) {
-        if (id == null) {
-            System.out.println(mensaje);
-            return false;
-        }
-        return true;
     }
 }

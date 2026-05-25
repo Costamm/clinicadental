@@ -2,6 +2,8 @@ package clinicaservice;
 
 import clinicamodelo.pacientes.Paciente;
 import clinicarepository.IRepositorio;
+import clinicaexception.PacienteNoEncontradoException;
+import clinicaexception.DatoInvalidoException;
 import java.util.List;
 
 public class ServicioPaciente {
@@ -11,83 +13,80 @@ public class ServicioPaciente {
         this.repositorioPaciente = repositorioPaciente;
     }
 
-    public boolean guardar(Paciente paciente) {
-        if (!validarPaciente(paciente)) {
-            return false;
-        }
-        if (!validarDniDisponible(paciente)) {
-            return false;
-        }
+    public boolean guardar(Paciente paciente) throws DatoInvalidoException {
+        validarPaciente(paciente);
+        validarDniDisponible(paciente);
         return repositorioPaciente.guardar(paciente);
     }
 
-    public Paciente buscarPorId(Long id) {
-        if (!validarId(id)) {
-            return null;
+    public Paciente buscarPorId(Long id) throws PacienteNoEncontradoException, DatoInvalidoException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del paciente es obligatorio.");
         }
-        return repositorioPaciente.buscarPorId(id);
+        Paciente paciente = repositorioPaciente.buscarPorId(id);
+        if (paciente == null) {
+            throw new PacienteNoEncontradoException("No existe un paciente con id " + id + ".");
+        }
+        return paciente;
     }
 
     public List<Paciente> listarTodos() {
         return repositorioPaciente.listarTodos();
     }
 
-    public boolean actualizar(Paciente paciente) {
-        if (!validarPaciente(paciente)) {
-            return false;
+    public boolean actualizar(Paciente paciente) throws PacienteNoEncontradoException, DatoInvalidoException {
+        validarPaciente(paciente);
+
+        if (repositorioPaciente.buscarPorId(paciente.getId()) == null) {
+            throw new PacienteNoEncontradoException("No se puede actualizar: No existe un paciente con id " + paciente.getId() + ".");
         }
-        if (!validarExistencia(paciente.getId())) {
-            return false;
-        }
-        if (!validarDniDisponible(paciente)) {
-            return false;
-        }
+
+        validarDniDisponible(paciente);
         return repositorioPaciente.actualizar(paciente);
     }
 
-    public boolean eliminar(Long id) {
-        if (!validarId(id)) {
-            return false;
+    public boolean eliminar(Long id) throws PacienteNoEncontradoException, DatoInvalidoException {
+        if (id == null) {
+            throw new DatoInvalidoException("El id del paciente es obligatorio.");
         }
-        if (!validarExistencia(id)) {
-            return false;
+        if (repositorioPaciente.buscarPorId(id) == null) {
+            throw new PacienteNoEncontradoException("No se puede eliminar: No existe un paciente con id " + id + ".");
         }
         return repositorioPaciente.eliminar(id);
     }
 
-    private boolean validarPaciente(Paciente paciente) {
+    private void validarPaciente(Paciente paciente) throws DatoInvalidoException {
         if (paciente == null) {
-            System.out.println("El paciente es obligatorio.");
-            return false;
+            throw new DatoInvalidoException("El paciente es obligatorio.");
         }
-        if (!validarId(paciente.getId())) {
-            return false;
+        if (paciente.getId() == null) {
+            throw new DatoInvalidoException("El id del paciente es obligatorio.");
         }
-        if (!validarTexto(paciente.getNombre(), "El nombre del paciente es obligatorio.")) {
-            return false;
+        if (paciente.getNombre() == null || paciente.getNombre().trim().isEmpty()) {
+            throw new DatoInvalidoException("El nombre del paciente es obligatorio.");
         }
-        if (!validarTexto(paciente.getApellido(), "El apellido del paciente es obligatorio.")) {
-            return false;
+        if (paciente.getApellido() == null || paciente.getApellido().trim().isEmpty()) {
+            throw new DatoInvalidoException("El apellido del paciente es obligatorio.");
         }
-        if (!validarTexto(paciente.getDni(), "El DNI del paciente es obligatorio.")) {
-            return false;
+        if (paciente.getDni() == null || paciente.getDni().trim().isEmpty()) {
+            throw new DatoInvalidoException("El DNI del paciente es obligatorio.");
         }
-        if (!validarTexto(paciente.getTelefono(), "El telefono del paciente es obligatorio.")) {
-            return false;
+        if (paciente.getTelefono() == null || paciente.getTelefono().trim().isEmpty()) {
+            throw new DatoInvalidoException("El telefono del paciente es obligatorio.");
         }
-        return validarTexto(paciente.getEmail(), "El email del paciente es obligatorio.");
+        if (paciente.getEmail() == null || paciente.getEmail().trim().isEmpty()) {
+            throw new DatoInvalidoException("El email del paciente es obligatorio.");
+        }
     }
 
-    private boolean validarDniDisponible(Paciente paciente) {
+    private void validarDniDisponible(Paciente paciente) throws DatoInvalidoException {
         for (Paciente pacienteRegistrado : repositorioPaciente.listarTodos()) {
             boolean mismoDni = pacienteRegistrado.getDni().equals(paciente.getDni());
             boolean distintoId = !pacienteRegistrado.getId().equals(paciente.getId());
             if (mismoDni && distintoId) {
-                System.out.println("Ya existe un paciente registrado con DNI " + paciente.getDni() + ".");
-                return false;
+                throw new DatoInvalidoException("Ya existe un paciente registrado con DNI " + paciente.getDni() + ".");
             }
         }
-        return true;
     }
 
     private boolean validarExistencia(Long id) {
