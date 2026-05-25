@@ -5,6 +5,7 @@ import clinicarepository.IRepositorio;
 import clinicaexception.PacienteNoEncontradoException;
 import clinicaexception.DatoInvalidoException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServicioPaciente {
     private final IRepositorio<Paciente> repositorioPaciente;
@@ -32,6 +33,22 @@ public class ServicioPaciente {
 
     public List<Paciente> listarTodos() {
         return repositorioPaciente.listarTodos();
+    }
+
+    public Paciente buscarPorDni(String dni) throws PacienteNoEncontradoException, DatoInvalidoException {
+        if (dni == null || dni.trim().isEmpty()) {
+            throw new DatoInvalidoException("El DNI es obligatorio.");
+        }
+        return repositorioPaciente.listarTodos().stream()
+                .filter(p -> p.getDni().equals(dni.trim()))
+                .findFirst()
+                .orElseThrow(() -> new PacienteNoEncontradoException("No existe un paciente con DNI " + dni + "."));
+    }
+
+    public List<Paciente> listarOrdenadosPorApellido() {
+        return repositorioPaciente.listarTodos().stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public boolean actualizar(Paciente paciente) throws PacienteNoEncontradoException, DatoInvalidoException {
@@ -89,27 +106,4 @@ public class ServicioPaciente {
         }
     }
 
-    private boolean validarExistencia(Long id) {
-        if (repositorioPaciente.buscarPorId(id) == null) {
-            System.out.println("No existe un paciente con id " + id + ".");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarId(Long id) {
-        if (id == null) {
-            System.out.println("El id del paciente es obligatorio.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarTexto(String valor, String mensaje) {
-        if (valor == null || valor.trim().isEmpty()) {
-            System.out.println(mensaje);
-            return false;
-        }
-        return true;
-    }
 }

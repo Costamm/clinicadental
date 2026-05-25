@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Paciente {
+public class Paciente implements Comparable<Paciente> {
     private Long id;
     private String nombre;
     private String apellido;
@@ -64,6 +64,11 @@ public class Paciente {
         if (t != null && !this.turnos.contains(t)) {
             this.turnos.add(t);
         }
+    }
+
+    @Override
+    public int compareTo(Paciente otro) {
+        return this.apellido.compareToIgnoreCase(otro.apellido);
     }
 
     @Override

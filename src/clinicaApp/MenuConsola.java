@@ -69,6 +69,8 @@ public class MenuConsola {
             System.out.println("3. Listar pacientes");
             System.out.println("4. Actualizar paciente");
             System.out.println("5. Eliminar paciente");
+            System.out.println("6. Buscar paciente por DNI");
+            System.out.println("7. Listar pacientes ordenados por apellido");
             System.out.println("0. Volver");
             opcion = leerEntero("Seleccione una opcion: ");
             switch (opcion) {
@@ -77,6 +79,8 @@ public class MenuConsola {
                 case 3 -> listarPacientes();
                 case 4 -> actualizarPaciente();
                 case 5 -> eliminarPaciente();
+                case 6 -> buscarPacientePorDni();
+                case 7 -> listarPacientesOrdenadosPorApellido();
                 case 0 -> {}
                 default -> System.out.println("Opcion invalida.");
             }
@@ -116,6 +120,9 @@ public class MenuConsola {
             System.out.println("4. Actualizar turno");
             System.out.println("5. Eliminar turno");
             System.out.println("6. Cancelar turno");
+            System.out.println("7. Buscar turnos por rango de fechas");
+            System.out.println("8. Filtrar turnos por odontologo");
+            System.out.println("9. Filtrar turnos por paciente");
             System.out.println("0. Volver");
             opcion = leerEntero("Seleccione una opcion: ");
             switch (opcion) {
@@ -125,6 +132,9 @@ public class MenuConsola {
                 case 4 -> actualizarTurno();
                 case 5 -> eliminarTurno();
                 case 6 -> cancelarTurno();
+                case 7 -> buscarTurnosPorRangoFechas();
+                case 8 -> filtrarTurnosPorOdontologo();
+                case 9 -> filtrarTurnosPorPaciente();
                 case 0 -> {}
                 default -> System.out.println("Opcion invalida.");
             }
@@ -392,6 +402,83 @@ public class MenuConsola {
             Long id = leerLong("ID del turno a cancelar: ");
             if (servicioTurno.cancelar(id)) {
                 System.out.println("Turno cancelado correctamente.");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private void buscarPacientePorDni() {
+        try {
+            String dni = leerTextoObligatorio("DNI del paciente: ");
+            Paciente paciente = servicioPaciente.buscarPorDni(dni);
+            System.out.println(paciente);
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private void listarPacientesOrdenadosPorApellido() {
+        List<Paciente> pacientes = servicioPaciente.listarOrdenadosPorApellido();
+        if (pacientes.isEmpty()) {
+            System.out.println("No hay pacientes registrados.");
+            return;
+        }
+        System.out.println("Pacientes ordenados por apellido:");
+        for (Paciente paciente : pacientes) {
+            System.out.println(paciente);
+        }
+    }
+
+    private void buscarTurnosPorRangoFechas() {
+        try {
+            LocalDate desde = leerFecha("Fecha inicio (AAAA-MM-DD): ");
+            LocalDate hasta = leerFecha("Fecha fin   (AAAA-MM-DD): ");
+            List<Turno> turnos = servicioTurno.buscarPorRangoFechas(desde, hasta);
+            if (turnos.isEmpty()) {
+                System.out.println("No hay turnos en ese rango de fechas.");
+                return;
+            }
+            System.out.println("Turnos del " + desde + " al " + hasta + ":");
+            for (Turno turno : turnos) {
+                System.out.println(turno);
+                System.out.println("--------------------");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private void filtrarTurnosPorOdontologo() {
+        try {
+            Long id = leerLong("ID del odontologo: ");
+            List<Turno> turnos = servicioTurno.filtrarPorOdontologo(id);
+            if (turnos.isEmpty()) {
+                System.out.println("No hay turnos para ese odontologo.");
+                return;
+            }
+            System.out.println("Turnos del odontologo " + id + ":");
+            for (Turno turno : turnos) {
+                System.out.println(turno);
+                System.out.println("--------------------");
+            }
+        } catch (ClinicaException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private void filtrarTurnosPorPaciente() {
+        try {
+            Long id = leerLong("ID del paciente: ");
+            List<Turno> turnos = servicioTurno.filtrarPorPaciente(id);
+            if (turnos.isEmpty()) {
+                System.out.println("No hay turnos para ese paciente.");
+                return;
+            }
+            System.out.println("Turnos del paciente " + id + ":");
+            for (Turno turno : turnos) {
+                System.out.println(turno);
+                System.out.println("--------------------");
             }
         } catch (ClinicaException e) {
             System.out.println("ERROR: " + e.getMessage());

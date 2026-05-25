@@ -16,6 +16,7 @@ import clinicaexception.OdontologoNoEncontradoException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServicioTurno {
     private final IRepositorio<Turno> repositorioTurno;
@@ -91,6 +92,40 @@ public class ServicioTurno {
 
     public List<Turno> listarTodos() {
         return repositorioTurno.listarTodos();
+    }
+
+    public List<Turno> buscarPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) throws DatoInvalidoException {
+        if (fechaInicio == null || fechaFin == null) {
+            throw new DatoInvalidoException("Las fechas de inicio y fin son obligatorias.");
+        }
+        if (fechaInicio.isAfter(fechaFin)) {
+            throw new DatoInvalidoException("La fecha de inicio no puede ser posterior a la fecha fin.");
+        }
+        return repositorioTurno.listarTodos().stream()
+                .filter(t -> !t.getFecha().isBefore(fechaInicio) && !t.getFecha().isAfter(fechaFin))
+                .sorted((a, b) -> {
+                    int cmpFecha = a.getFecha().compareTo(b.getFecha());
+                    return cmpFecha != 0 ? cmpFecha : a.getHora().compareTo(b.getHora());
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Turno> filtrarPorOdontologo(Long odontologoId) throws DatoInvalidoException {
+        if (odontologoId == null) {
+            throw new DatoInvalidoException("El id del odontologo es obligatorio.");
+        }
+        return repositorioTurno.listarTodos().stream()
+                .filter(t -> t.getOdontologo().getId().equals(odontologoId))
+                .collect(Collectors.toList());
+    }
+
+    public List<Turno> filtrarPorPaciente(Long pacienteId) throws DatoInvalidoException {
+        if (pacienteId == null) {
+            throw new DatoInvalidoException("El id del paciente es obligatorio.");
+        }
+        return repositorioTurno.listarTodos().stream()
+                .filter(t -> t.getPaciente() != null && t.getPaciente().getId().equals(pacienteId))
+                .collect(Collectors.toList());
     }
 
     public boolean actualizar(Turno turno) throws ClinicaException {
