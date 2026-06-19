@@ -1,23 +1,24 @@
 package clinicaApp;
 
-import clinicarepository.RepositorioOdontologo;
-import clinicarepository.RepositorioPaciente;
-import clinicarepository.RepositorioTurno;
-import clinicaservice.ServicioOdontologo;
-import clinicaservice.ServicioPaciente;
-import clinicaservice.ServicioTurno;
+import clinicagui.VentanaPrincipal;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        RepositorioPaciente repositorioPaciente = new RepositorioPaciente();
-        RepositorioOdontologo repositorioOdontologo = new RepositorioOdontologo();
-        RepositorioTurno repositorioTurno = new RepositorioTurno(repositorioPaciente, repositorioOdontologo);
+        // Ejecutamos un hilo secundario básico para simular la carga asíncrona de la base de datos
+        new Thread(() -> {
+            try {
+                // Simulamos 1.5 segundos de lectura de archivos CSV
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
-        ServicioPaciente servicioPaciente = new ServicioPaciente(repositorioPaciente);
-        ServicioOdontologo servicioOdontologo = new ServicioOdontologo(repositorioOdontologo);
-        ServicioTurno servicioTurno = new ServicioTurno(repositorioTurno, repositorioPaciente, repositorioOdontologo);
-
-        MenuConsola menuConsola = new MenuConsola(servicioPaciente, servicioOdontologo, servicioTurno);
-        menuConsola.iniciar();
+            // Una vez terminada la "carga", abrimos la interfaz gráfica en el hilo EDT de Swing
+            SwingUtilities.invokeLater(() -> {
+                VentanaPrincipal ventana = new VentanaPrincipal();
+                ventana.setVisible(true);
+            });
+        }).start();
     }
 }
