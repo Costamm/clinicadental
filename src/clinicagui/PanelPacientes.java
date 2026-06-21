@@ -107,7 +107,7 @@ public class PanelPacientes extends JPanel {
     }
 
     private void configurarEventos() {
-        // Evento Guardar
+        // Evento Guardar / Actualizar
         btnGuardar.addActionListener(e -> {
             try {
                 Long id = Long.parseLong(txtId.getText().trim());
@@ -125,9 +125,16 @@ public class PanelPacientes extends JPanel {
                 Domicilio domicilio = new Domicilio(id, calle, numero, localidad, provincia);
                 Paciente paciente = new Paciente(id, nombre, apellido, dni, telefono, email, LocalDate.now(), domicilio);
 
-                // Intentamos guardar mediante el servicio
-                servicioPaciente.guardar(paciente);
-                JOptionPane.showMessageDialog(this, "Paciente registrado correctamente.");
+                // Preguntamos al servicio si ya existe un paciente con ese ID.
+                // Si existe -> actualizamos. Si no existe -> guardamos como nuevo.
+                if (servicioPaciente.existePorId(id)) {
+                    servicioPaciente.actualizar(paciente);
+                    JOptionPane.showMessageDialog(this, "Paciente actualizado correctamente.");
+                } else {
+                    servicioPaciente.guardar(paciente);
+                    JOptionPane.showMessageDialog(this, "Paciente registrado correctamente.");
+                }
+
                 actualizarTabla();
                 limpiarCampos();
             } catch (NumberFormatException ex) {
@@ -154,13 +161,14 @@ public class PanelPacientes extends JPanel {
                     servicioPaciente.eliminar(id);
                     JOptionPane.showMessageDialog(this, "Paciente eliminado.");
                     actualizarTabla();
+                    limpiarCampos();
                 } catch (ClinicaException ex) {
                     JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        // MouseListener para cargar datos de la tabla al formulario al hacer click
+        // MouseListener (vía selección) para cargar datos de la tabla al formulario al hacer click
         tablaPacientes.getSelectionModel().addListSelectionListener(e -> {
             int fila = tablaPacientes.getSelectedRow();
             if (fila != -1) {

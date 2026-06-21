@@ -49,7 +49,10 @@ public class PanelOdontologos extends JPanel {
 
         // Tabla
         String[] columnas = {"ID", "Apellido", "Nombre", "Matrícula"};
-        modeloTabla = new DefaultTableModel(columnas, 0);
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; } // Solo lectura
+        };
         tablaOdontologos = new JTable(modeloTabla);
         JScrollPane scroll = new JScrollPane(tablaOdontologos);
 
@@ -69,6 +72,7 @@ public class PanelOdontologos extends JPanel {
     }
 
     private void configurarEventos() {
+        // Evento Guardar / Actualizar
         btnGuardar.addActionListener(e -> {
             try {
                 Long id = Long.parseLong(txtId.getText().trim());
@@ -77,13 +81,22 @@ public class PanelOdontologos extends JPanel {
                 String matricula = txtMatricula.getText().trim();
 
                 Odontologo o = new Odontologo(id, nombre, apellido, matricula);
-                servicioOdontologo.guardar(o);
 
-                JOptionPane.showMessageDialog(this, "Odontólogo guardado.");
+                // Mismo criterio que pacientes: si ya existe el ID, actualizamos; si no, guardamos.
+                if (servicioOdontologo.existePorId(id)) {
+                    servicioOdontologo.actualizar(o);
+                    JOptionPane.showMessageDialog(this, "Odontólogo actualizado.");
+                } else {
+                    servicioOdontologo.guardar(o);
+                    JOptionPane.showMessageDialog(this, "Odontólogo guardado.");
+                }
+
                 actualizarTabla();
                 limpiarCampos();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "El ID debe ser un valor numérico.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (ClinicaException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -91,17 +104,25 @@ public class PanelOdontologos extends JPanel {
 
         btnEliminar.addActionListener(e -> {
             int fila = tablaOdontologos.getSelectedRow();
-            if (fila == -1) return;
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(this, "Seleccione un odontólogo de la tabla.", "Atención", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             Long id = (Long) modeloTabla.getValueAt(fila, 0);
-            try {
-                servicioOdontologo.eliminar(id);
-                actualizarTabla();
-                limpiarCampos();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+            int seguro = JOptionPane.showConfirmDialog(this, "¿Eliminar al odontólogo ID: " + id + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (seguro == JOptionPane.YES_OPTION) {
+                try {
+                    servicioOdontologo.eliminar(id);
+                    JOptionPane.showMessageDialog(this, "Odontólogo eliminado.");
+                    actualizarTabla();
+                    limpiarCampos();
+                } catch (ClinicaException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
+        // Selección de fila: carga los datos al formulario
         tablaOdontologos.getSelectionModel().addListSelectionListener(e -> {
             int fila = tablaOdontologos.getSelectedRow();
             if (fila != -1) {
