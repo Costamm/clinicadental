@@ -125,8 +125,6 @@ public class VentanaPrincipal extends JFrame {
                 );
 
                 if (opcion == JOptionPane.YES_OPTION) {
-                    // Los repositorios guardan automáticamente al disco tras cada operación CRUD,
-                    // así que al cerrar la persistencia ya quedó garantizada.
                     System.exit(0);
                 }
             }

@@ -29,7 +29,7 @@ public class PanelPacientes extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 1. CREAR EL FORMULARIO (Panel Izquierdo con estructura Grid)
+        //  Crear formulario izquierdo
         JPanel panelFormulario = new JPanel(new GridLayout(11, 2, 5, 5));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Paciente"));
 
@@ -73,13 +73,13 @@ public class PanelPacientes extends JPanel {
         txtProvincia = new JTextField();
         panelFormulario.add(txtProvincia);
 
-        // Botonera interna del formulario
+        // Botonera
         btnGuardar = new JButton("Guardar / Actualizar");
         btnLimpiar = new JButton("Limpiar Campos");
         panelFormulario.add(btnGuardar);
         panelFormulario.add(btnLimpiar);
 
-        // 2. CREAR LA TABLA (Centro / Derecha)
+        // crear tabla
         String[] columnas = {"ID", "Apellido", "Nombre", "DNI", "Teléfono", "Email"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -97,17 +97,16 @@ public class PanelPacientes extends JPanel {
         panelDerecho.add(scrollTabla, BorderLayout.CENTER);
         panelDerecho.add(panelAccionesTabla, BorderLayout.SOUTH);
 
-        // Agregar todo al panel principal
         add(panelFormulario, BorderLayout.WEST);
         add(panelDerecho, BorderLayout.CENTER);
 
-        // 3. ASIGNAR LOS EVENTOS BÁSICOS
+
         configurarEventos();
         actualizarTabla();
     }
 
     private void configurarEventos() {
-        // Evento Guardar / Actualizar
+        // Guardar  Actualizar
         btnGuardar.addActionListener(e -> {
             try {
                 Long id = Long.parseLong(txtId.getText().trim());

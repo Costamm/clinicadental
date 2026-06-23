@@ -72,7 +72,7 @@ public class PanelOdontologos extends JPanel {
     }
 
     private void configurarEventos() {
-        // Evento Guardar / Actualizar
+        // Guardar / Actualizar
         btnGuardar.addActionListener(e -> {
             try {
                 Long id = Long.parseLong(txtId.getText().trim());

@@ -30,8 +30,6 @@ public class ServicioOdontologo {
         return odontologo;
     }
 
-    // Devuelve true si ya existe un odontologo con ese ID, false si no.
-    // Lo usamos en la GUI para decidir entre guardar (nuevo) o actualizar (existente).
     public boolean existePorId(Long id) {
         if (id == null) {
             return false;
