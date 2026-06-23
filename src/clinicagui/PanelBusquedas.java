@@ -22,11 +22,11 @@ public class PanelBusquedas extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // PANEL SUPERIOR DE FILTROS
+        // PAnel de filtros
         JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         panelFiltros.setBorder(BorderFactory.createTitledBorder("Filtros de Búsqueda de Turnos"));
 
-        // Filtro 1: Fechas
+        // Filtro 1
         panelFiltros.add(new JLabel("Desde (AAAA-MM-DD):"));
         txtFechaInicio = new JTextField(8);
         panelFiltros.add(txtFechaInicio);
@@ -40,7 +40,7 @@ public class PanelBusquedas extends JPanel {
 
         panelFiltros.add(new JSeparator(SwingConstants.VERTICAL));
 
-        // Filtro 2: Odontólogo ID
+        // Filtro 2
         panelFiltros.add(new JLabel("ID Odontólogo:"));
         txtOdontologoId = new JTextField(4);
         panelFiltros.add(txtOdontologoId);
@@ -48,7 +48,7 @@ public class PanelBusquedas extends JPanel {
         btnBuscarOdontologo = new JButton("Filtrar Odontólogo");
         panelFiltros.add(btnBuscarOdontologo);
 
-        // TABLA CENTRAL DE RESULTADOS
+        // resultados
         String[] columnas = {"ID Turno", "Paciente", "Odontólogo", "Fecha", "Hora", "Estado"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaResultados = new JTable(modeloTabla);
@@ -73,7 +73,7 @@ public class PanelBusquedas extends JPanel {
             }
         });
 
-        // Evento Filtrar por Odontólogo
+        // filtrar por odontologo
         btnBuscarOdontologo.addActionListener(e -> {
             try {
                 Long idOdontologo = Long.parseLong(txtOdontologoId.getText().trim());

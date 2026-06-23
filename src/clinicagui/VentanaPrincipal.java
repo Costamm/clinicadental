@@ -18,7 +18,7 @@ public class VentanaPrincipal extends JFrame {
     private ServicioOdontologo servicioOdontologo;
     private ServicioTurno servicioTurno;
 
-    // 2. Componentes de la Interfaz Visual
+    //  partes de la interfaz visual
     private JPanel panelLateral;
     private JPanel panelCentralContenedor;
     private CardLayout cardLayout;
@@ -37,47 +37,43 @@ public class VentanaPrincipal extends JFrame {
         this.servicioOdontologo = new ServicioOdontologo(repoOdontologo);
         this.servicioTurno = new ServicioTurno(repoTurno, repoPaciente, repoOdontologo);
 
-        // --- CONFIGURACIÓN DEL MARCO (JFrame) ---
+        //  el marco
         setTitle("Sistema de Gestión - Clínica Dental HSM360");
         setSize(950, 650);
         setMinimumSize(new Dimension(850, 550));
         setLocationRelativeTo(null); // Centra la ventana en la pantalla del usuario
 
-        // Evitamos que la ventana se cierre de golpe. Interceptamos el evento con un WindowListener
+        // para que no se cierre la ventana de golpe
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        // --- LAYOUT PRINCIPAL ---
-        // BorderLayout divide la ventana: menú fijo a la izquierda (WEST)
-        // y contenido dinámico en el centro (CENTER).
+        // BorderLayout divide la ventana
         setLayout(new BorderLayout());
 
-        // CardLayout apila las pantallas como cartas y muestra solo una a la vez.
+        // CardLayout apila la s cartas
         cardLayout = new CardLayout();
         panelCentralContenedor = new JPanel(cardLayout);
 
-        // --- CONSTRUCCIÓN VISUAL MODULAR ---
         crearPanelLateral();
         crearPanelesDeGestionBase();
 
-        // Acoplamos los paneles construidos al marco principal
+
         add(panelLateral, BorderLayout.WEST);
         add(panelCentralContenedor, BorderLayout.CENTER);
 
-        // Escuchamos el evento de cierre para confirmar la salida
         configurarCierreAutomatico();
     }
 
     private void crearPanelLateral() {
         panelLateral = new JPanel();
-        // Color gris azulado oscuro
+
         panelLateral.setBackground(new Color(41, 48, 66));
 
-        // GridLayout de 6 filas y 1 columna: botones alineados verticalmente
+
         panelLateral.setLayout(new GridLayout(6, 1, 10, 15));
         panelLateral.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
 
-        // Título de la App en la parte superior del menú
-        JLabel lblTitulo = new JLabel(" HSM360 Dental", SwingConstants.CENTER);
+        // el titulo
+        JLabel lblTitulo = new JLabel(" Sonrisa feliz", SwingConstants.CENTER);
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
         panelLateral.add(lblTitulo);
@@ -88,14 +84,14 @@ public class VentanaPrincipal extends JFrame {
         btnTurnos = new JButton("Gestión Turnos");
         btnBusquedas = new JButton("Búsquedas Avanzadas");
 
-        // --- MANEJO DE EVENTOS (ActionListener) ---
+
         // Al hacer clic, el CardLayout "voltea la carta" y muestra el panel por su nombre.
         btnPacientes.addActionListener(e -> cardLayout.show(panelCentralContenedor, "panelPacientes"));
         btnOdontologos.addActionListener(e -> cardLayout.show(panelCentralContenedor, "panelOdontologos"));
         btnTurnos.addActionListener(e -> cardLayout.show(panelCentralContenedor, "panelTurnos"));
         btnBusquedas.addActionListener(e -> cardLayout.show(panelCentralContenedor, "panelBusquedas"));
 
-        // Añadimos los botones al contenedor lateral
+        // se aniaden los botones
         panelLateral.add(btnPacientes);
         panelLateral.add(btnOdontologos);
         panelLateral.add(btnTurnos);
@@ -103,14 +99,12 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void crearPanelesDeGestionBase() {
-        // Creamos las instancias reales de los CUATRO paneles funcionales
+        // Creamos las instancias
         PanelPacientes panelPacientesReal = new PanelPacientes(this.servicioPaciente);
         PanelOdontologos panelOdontologosReal = new PanelOdontologos(this.servicioOdontologo);
         PanelTurnos panelTurnosReal = new PanelTurnos(this.servicioTurno, this.servicioPaciente, this.servicioOdontologo);
         PanelBusquedas panelBusquedasReal = new PanelBusquedas(this.servicioTurno);
 
-        // Los montamos dentro del contenedor central del CardLayout.
-        // El segundo parámetro (String) es el identificador que usa cardLayout.show()
         panelCentralContenedor.add(panelPacientesReal, "panelPacientes");
         panelCentralContenedor.add(panelOdontologosReal, "panelOdontologos");
         panelCentralContenedor.add(panelTurnosReal, "panelTurnos");
@@ -118,8 +112,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void configurarCierreAutomatico() {
-        // --- MANEJO DE EVENTOS DE VENTANA (WindowListener) ---
-        // Modificamos el comportamiento del botón 'X' para pedir confirmación.
+        //  botón 'X' para pedir la confirmación
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

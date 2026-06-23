@@ -82,7 +82,6 @@ public class PanelOdontologos extends JPanel {
 
                 Odontologo o = new Odontologo(id, nombre, apellido, matricula);
 
-                // Mismo criterio que pacientes: si ya existe el ID, actualizamos; si no, guardamos.
                 if (servicioOdontologo.existePorId(id)) {
                     servicioOdontologo.actualizar(o);
                     JOptionPane.showMessageDialog(this, "Odontólogo actualizado.");
@@ -122,7 +121,7 @@ public class PanelOdontologos extends JPanel {
             }
         });
 
-        // Selección de fila: carga los datos al formulario
+        // selección de fila
         tablaOdontologos.getSelectionModel().addListSelectionListener(e -> {
             int fila = tablaOdontologos.getSelectedRow();
             if (fila != -1) {

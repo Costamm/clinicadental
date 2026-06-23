@@ -38,7 +38,7 @@ public class PanelTurnos extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 1. FORMULARIO DE ALTA DE TURNOS
+        // formulario de los turnos
         JPanel panelFormulario = new JPanel(new GridLayout(8, 2, 5, 5));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Agendar / Modificar Turno"));
 
@@ -76,7 +76,7 @@ public class PanelTurnos extends JPanel {
         panelFormulario.add(btnGuardar);
         panelFormulario.add(btnLimpiar);
 
-        // 2. TABLA DE REGISTROS
+        // tabla de registros
         String[] columnas = {"ID", "Paciente", "Odontólogo", "Fecha", "Hora", "Estado", "Costo"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaTurnos = new JTable(modeloTabla);
@@ -102,7 +102,7 @@ public class PanelTurnos extends JPanel {
         comboPacientes.removeAllItems();
         comboOdontologos.removeAllItems();
 
-        // Poblamos las listas desplegables llamando a los otros servicios
+
         servicioPaciente.listarTodos().forEach(comboPacientes::addItem);
         servicioOdontologo.listarTodos().forEach(comboOdontologos::addItem);
     }
@@ -114,7 +114,7 @@ public class PanelTurnos extends JPanel {
             txtMotivoUrgencia.setEnabled("Urgente".equals(seleccion));
         });
 
-        // Guardar Turno
+        // Guardar turno
         btnGuardar.addActionListener(e -> {
             try {
                 Long id = Long.parseLong(txtId.getText().trim());
